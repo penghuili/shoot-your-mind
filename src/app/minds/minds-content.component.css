@@ -6,5 +6,6 @@ canvas {
 
 .container {
     position: relative;
+    padding: 0;
 }
 

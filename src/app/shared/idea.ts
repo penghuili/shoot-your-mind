@@ -4,4 +4,6 @@ export class Idea {
     left: number;
     top: number;
     note?: string;
+    centerX?: number;
+    centerY?: number;
 }
