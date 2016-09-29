@@ -1,0 +1,8 @@
+:host {
+    position: absolute;
+    cursor: default;
+}
+
+.card-block {
+    padding: 0.5rem;
+}

@@ -1,0 +1,10 @@
+<div class="container" 
+    (mousemove)="onMousemove($event)"
+    (mouseup)="onMouseup($event)">
+    <canvas></canvas>
+    <sym-idea *ngFor="let idea of ideas" [idea]="idea"
+        [style.top.px]="idea.top"
+        [style.left.px]="idea.left"
+        (mousedown)="onMousedown($event, idea)">        
+    </sym-idea>
+</div>
