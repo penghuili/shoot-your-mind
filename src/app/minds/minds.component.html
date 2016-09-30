@@ -4,7 +4,13 @@
             <sym-minds-sidebar></sym-minds-sidebar>
         </div>
         <div class="col-sm-9">
-            <sym-minds-content></sym-minds-content>
+            <sym-minds-content
+                [ideas]="ideas | async"
+                [lines]="lines | async"
+                (newIdeaCreated)="onNewIdeaCreated($event)"
+                (newLineCreated)="onNewLineCreated($event)"
+                (ideaMoved)="onIdeaMoved($event)">
+            </sym-minds-content>
         </div>
     </div>
 </div>
