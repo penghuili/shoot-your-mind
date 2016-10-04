@@ -27,6 +27,7 @@ export class MindsContentComponent implements OnInit {
     private mousedownPosition: Position = {left: 0, top: 0};
     private startIdea: Idea = {id: "", text: "", left: 0, top: 0};
     private movingIdea: Idea;
+    private isMovingIdea: boolean = false;
     private stopIdea: Idea = {id: "", text: "", left: 0, top: 0};
     private containerLeft: number;
     private containerTop: number;
@@ -35,7 +36,7 @@ export class MindsContentComponent implements OnInit {
     private mouseupOnIdea$: Subject<EventAndIdea> = new Subject();
     private mouseupOnContainer$: Subject<MouseEvent> = new Subject();
 
-    private addingNewIdea = false;
+    private isAddingNewIdea = false;
     newIdeaPosition: Position;
 
     @ViewChild("container") container: ElementRef;
@@ -46,6 +47,7 @@ export class MindsContentComponent implements OnInit {
     @Output() newLineCreated = new EventEmitter<Line>();
     @Output() ideaMoved = new EventEmitter<Idea>();
     @Output() newIdeaCreated = new EventEmitter<Idea>();
+    @Output() ideaDeleted = new EventEmitter<Idea>();
 
     constructor(private utils: UtilsService) {}
 
@@ -65,18 +67,17 @@ export class MindsContentComponent implements OnInit {
                     this.drawMovingLine(e);
                 }   
         });
-        this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {
-            if((<HTMLElement>ei.event.target).nodeName !== "CANVAS") {                
-                if(ei.event.button === 2) {
-                    this.updateLines(ei);
-                } else if(ei.event.button === 0) {
-                    this.ideaMoved.next(ei.idea);
-                }
+        this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {              
+            if(ei.event.button === 2) {
+                this.updateLines(ei);
+            } else if(ei.event.button === 0) {
+                this.isMovingIdea = false;
+                this.ideaMoved.next(ei.idea);
             }
         });
     }
     
-    onMousedown(e: MouseEvent, idea: Idea) {
+    onMousedownOnIdea(e: MouseEvent, idea: Idea) {
         e.stopPropagation();
         let data: EventAndIdea = {
             event: e,
@@ -84,20 +85,13 @@ export class MindsContentComponent implements OnInit {
         };
         this.mousedownOnIdea$.next(data);
     }
-    onMousemove(e: MouseEvent) {
+    onMousemoveOnContainer(e: MouseEvent) {
         this.mousemoveOnContainer$.next(e);
     }
-    onMouseup(e: MouseEvent, idea: Idea) {
-        // e.stopPropagation();
+    onMouseupOnIdea(e: MouseEvent, idea: Idea) {
+        e.stopPropagation();
         let data = {event: e, idea: idea};
         this.mouseupOnIdea$.next(data);
-    }
-    onMouseupOnContainer(e: MouseEvent) {
-        if((<HTMLElement>e.target).nodeName === "CANVAS") {
-            this.ctx.clearRect(0, 0, 480, 600);
-            this.drawLines();
-            this.mousemoveOnContainer$.next(e);
-        }
     }
     onContextmenu(e: MouseEvent) {
         e.preventDefault();
@@ -105,18 +99,19 @@ export class MindsContentComponent implements OnInit {
 
     onMouseupOnCanvas(e: MouseEvent) {
         e.stopPropagation();
+        
         if(e.button === 0) {
-            if(this.addingNewIdea === true) {
-                this.addingNewIdea = false;
+            if(this.isAddingNewIdea === true) {
+                this.isAddingNewIdea = false;
             } else {
                 this.newIdeaPosition = {
                     left: e.pageX - this.containerLeft - 25,
                     top: e.pageY - this.containerTop -25
                 };
-                this.addingNewIdea = true;
+                this.isAddingNewIdea = true;
             }
         } else if(e.button === 2) {
-            this.mousedownOnIdea$.next({
+            this.mouseupOnIdea$.next({
                 event: e, 
                 idea: {
                     id: "",
@@ -138,7 +133,10 @@ export class MindsContentComponent implements OnInit {
             {centerX: centerX, centerY: centerY}
         );
         this.newIdeaCreated.next(newIdea);
-        this.addingNewIdea = false;
+        this.isAddingNewIdea = false;
+    }
+    onDeleteIdea(idea: Idea) {
+        this.ideaDeleted.next(idea);
     }
 
     onAddWidthAndHeight(e: Idea) {
@@ -156,7 +154,7 @@ export class MindsContentComponent implements OnInit {
             .filter((e: KeyboardEvent) => {
                 return e.keyCode === 27;
             }).subscribe((e: KeyboardEvent) => {
-                this.addingNewIdea = false;
+                this.isAddingNewIdea = false;
             });
         this.ctx = this.canvas.nativeElement.getContext("2d");
         this.containerLeft = this.getContainerPosition(this.container.nativeElement, "offsetLeft");
@@ -174,6 +172,9 @@ export class MindsContentComponent implements OnInit {
     }
 
     private moveIdea(e: MouseEvent) {
+        if(this.isMovingIdea === false) {
+            this.isMovingIdea = true;
+        }
         let left = this.startIdea.left + e.pageX - this.mousedownPosition.left;
         let top = this.startIdea.top + e.pageY - this.mousedownPosition.top;
         this.ideas = this.ideas.map(idea => {
@@ -211,7 +212,13 @@ export class MindsContentComponent implements OnInit {
             ideaA: Object.assign({}, this.startIdea),
             ideaB: Object.assign({}, this.stopIdea)
         };
-        this.lines = [...this.lines, newLine];
+        let isRepeated = this.lines.filter(line => {
+            return (line.ideaA.id === newLine.ideaA.id && line.ideaB.id === newLine.ideaB.id) || 
+                (line.ideaA.id === newLine.ideaB.id && line.ideaB.id === newLine.ideaA.id);
+        }).length > 0;
+        if(!isRepeated) {
+            this.lines = [...this.lines, newLine];
+        }
         this.ctx.clearRect(0, 0, 480, 600);
         this.drawLines();
         this.newLineCreated.next(newLine);

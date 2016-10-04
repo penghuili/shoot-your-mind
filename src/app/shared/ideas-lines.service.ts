@@ -12,10 +12,12 @@ import {
     LOAD_IDEAS,
     UPDATE_IDEA,
     ADD_IDEA,
+    DELETE_IDEA,
 
     LOAD_LINES,
     UPDATE_LINES,
-    ADD_LINE
+    ADD_LINE,
+    DELETE_LINES
 } from './reducers';
 
 @Injectable()
@@ -43,6 +45,12 @@ export class IdeasLinesService {
     addIdea(idea: Idea) {
         this.addIdeaToServer(idea);
         this.store.dispatch({type: ADD_IDEA, payload: idea});
+    }
+
+    deleteIdea(idea: Idea) {
+        this.deleteIdeaFromServer(idea);
+        this.store.dispatch({type: DELETE_IDEA, payload: idea});
+        this.store.dispatch({type: DELETE_LINES, payload: idea});
     }
 
     loadLines() {
@@ -75,6 +83,14 @@ export class IdeasLinesService {
     private addIdeaToServer(idea: Idea) {
         let ideas = JSON.parse(localStorage.getItem("ideas"));
         ideas = [...ideas, idea];
+        localStorage.setItem("ideas", JSON.stringify(ideas));
+    }
+
+    private deleteIdeaFromServer(idea: Idea) {
+        let ideas = JSON.parse(localStorage.getItem("ideas"));
+        ideas = ideas.filter(i => {
+            return i.id !== idea.id;
+        });
         localStorage.setItem("ideas", JSON.stringify(ideas));
     }
 

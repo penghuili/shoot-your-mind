@@ -14,8 +14,10 @@ import { Idea } from '../shared/idea';
 export class IdeaComponent implements AfterViewInit {
     @Input() idea: Idea;
     @Output() addWidthAndHeight = new EventEmitter<Idea>();
+    @Output() deleteIdea = new EventEmitter<Idea>();
 
     constructor(private er: ElementRef) {}
+
     ngAfterViewInit() {
         let width = this.er.nativeElement.offsetWidth;
         let height = this.er.nativeElement.offsetHeight;
@@ -25,5 +27,10 @@ export class IdeaComponent implements AfterViewInit {
             let data = Object.assign({}, this.idea, {centerX: centerX, centerY: centerY});
             this.addWidthAndHeight.next(data);
         }
+    }
+
+    onClick(e: MouseEvent) {
+        e.stopPropagation();
+        this.deleteIdea.next(this.idea);
     }
 }

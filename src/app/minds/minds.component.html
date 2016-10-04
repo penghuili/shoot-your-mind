@@ -9,6 +9,7 @@
                 [lines]="lines | async"
                 (newIdeaCreated)="onNewIdeaCreated($event)"
                 (newLineCreated)="onNewLineCreated($event)"
+                (ideaDeleted)="onIdeaDeleted($event)"
                 (ideaMoved)="onIdeaMoved($event)">
             </sym-minds-content>
         </div>

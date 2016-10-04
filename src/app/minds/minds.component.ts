@@ -37,6 +37,10 @@ export class MindsComponent implements OnInit{
         this.ideasLinesService.updateIdea(idea);
     } 
 
+    onIdeaDeleted(idea: Idea) {
+        this.ideasLinesService.deleteIdea(idea);
+    }
+
     onNewIdeaCreated(idea: Idea) {
         this.ideasLinesService.addIdea(idea);
     }
