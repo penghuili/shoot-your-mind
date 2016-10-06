@@ -9,4 +9,5 @@ export class Idea {
     centerX?: number;
     centerY?: number;
     isEditing?: boolean;
+    isSelected?: boolean;
 }

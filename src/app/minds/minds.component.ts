@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
 import { AppStore } from '../shared/reducers';
@@ -16,17 +17,23 @@ export class MindsComponent implements OnInit{
     ideas: Observable<Idea[]>;
     lines: Observable<Line[]>;
 
+    private routeSub: any;
+    private docId: string;
+
     constructor(
         private ideasLinesService: IdeasLinesService,
         private utils: UtilsService,
+        private route: ActivatedRoute,
         private store: Store<AppStore>
     ) {}
 
     ngOnInit() {
+        this.routeSub = this.route.params.subscribe(params => {
+            this.docId = params["docId"];
+        });
         this.ideas = this.store.select("ideas");
         this.lines = this.store.select("lines");
-        this.ideasLinesService.loadIdeas();
-        this.ideasLinesService.loadLines();
+        this.ideasLinesService.loadIdeasAndLines(this.docId);
     }
 
     onLineCreated(line: Line) {
@@ -59,6 +66,10 @@ export class MindsComponent implements OnInit{
 
     onIdeaCreated(idea: Idea) {
         this.ideasLinesService.addIdea(idea);
+    }
+
+    onIdeaSelected(idea: Idea) {
+        this.ideasLinesService.selectIdea(idea);
     }
 
     onCenterAdded(idea: Idea) {

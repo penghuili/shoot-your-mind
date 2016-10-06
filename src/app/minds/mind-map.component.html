@@ -10,6 +10,7 @@
         [idea]="idea"
         [style.top.px]="idea.top"
         [style.left.px]="idea.left"
+        [class.borderBlue]="idea.isSelected"
         (mousedown)="onMousedownOnIdea($event, idea)"
         (mouseup)="onMouseupOnIdea($event, idea)"
         (contextmenu)="onContextmenu($event)"

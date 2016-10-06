@@ -61,6 +61,7 @@ export class MindMapComponent implements OnInit {
     @Output() ideaUpdated = new EventEmitter<Idea>();
     @Output() ideaCreated = new EventEmitter<Idea>();
     @Output() ideaDeleted = new EventEmitter<Idea>();
+    @Output() ideaSelected = new EventEmitter<Idea>();
     @Output() centerAdded = new EventEmitter<Idea>();
 
     constructor(private utils: UtilsService) {}
@@ -87,6 +88,8 @@ export class MindMapComponent implements OnInit {
             if(ei.event.button === 0) {
                 if(this.isMovingIdea) {
                     this.onIdeaUpdated(ei.idea);
+                } else {
+                    this.selectIdea();
                 }
             } else if(ei.event.button === 2) {
                 if(this.isAddingNewLine) {
@@ -220,6 +223,10 @@ export class MindMapComponent implements OnInit {
             top: e.pageY - this.containerTop
         };
         this.isAddingNewIdea = true;
+    }
+
+    private selectIdea() {
+        this.ideaSelected.next(this.startIdea);
     }
 
     private drawMovingLine(e: MouseEvent){

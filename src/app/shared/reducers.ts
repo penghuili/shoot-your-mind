@@ -2,6 +2,9 @@ import { ActionReducer, Action } from '@ngrx/store';
 
 import { Idea } from './idea';
 import { Line } from './line';
+import { Doc } from './doc';
+
+export const LOAD_DOCS = "LOAD_DOCS";
 
 export const LOAD_IDEAS = "LOAD_IDEAS";
 export const UPDATE_IDEA = "UPDATE_IDEA";
@@ -13,11 +16,13 @@ export const UPDATE_LINES = "UPDATE_LINES";
 export const ADD_LINE = "ADD_LINE";
 export const DELETE_LINES_WHEN_DELETE_IDEA = "DELETE_LINES_WHEN_DELETE_IDEA";
 export const DELETE_MOVING_LINE = "DELETE_MOVING_LINE";
-export const DELETE_LINES = "DELETE_LINES"
+export const DELETE_LINES = "DELETE_LINES";
+export const SELECT_IDEA = "SELECT_IDEA";
 
 export interface AppStore {
     ideas: Idea[];
     lines: Line[];
+    docs: Doc[];
 }
 
 export const initialIdeas: Idea[] = [
@@ -41,10 +46,19 @@ export const initialIdeas: Idea[] = [
     }
 ];
 
+export const docsReducer: ActionReducer<Doc[]> = (state: Doc[] = [], action: Action) => {
+    switch(action.type) {
+        case LOAD_DOCS:
+            return action.payload;
+        default:
+            return state;
+    }
+};
+
 
 export const ideasReducer: ActionReducer<Idea[]> = 
     (state: Idea[] = initialIdeas, action: Action) => {
-        switch(action.type){
+        switch(action.type) {
             case LOAD_IDEAS:
                 return action.payload;
             case UPDATE_IDEA:
@@ -60,6 +74,18 @@ export const ideasReducer: ActionReducer<Idea[]> =
             case DELETE_IDEA:
                 return state.filter(idea => {
                     return idea.id !== action.payload.id;
+                });
+            case SELECT_IDEA:
+                return state.map(idea => {
+                    if(idea.id === action.payload.id) {
+                        if(idea.isSelected) {
+                            return Object.assign({}, idea, {isSelected: false});
+                        } else {
+                            return Object.assign({}, idea, {isSelected: true});
+                        }
+                    } else {
+                        return Object.assign({}, idea, {isSelected: false});
+                    }
                 });
             default:
                 return state;

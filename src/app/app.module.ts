@@ -3,8 +3,15 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { StoreModule } from '@ngrx/store'; 
+import { RouterModule } from '@angular/router';
 
-import { ideasReducer, linesReducer } from './shared/reducers';
+import { routes } from './routes';
+
+import { 
+  ideasReducer, 
+  linesReducer,
+  docsReducer
+} from './shared/reducers';
 import { IdeasLinesService } from './shared/ideas-lines.service';
 import { UtilsService } from './shared/utils.service';
 
@@ -34,7 +41,12 @@ import { DocCardComponent } from './minds/doc-card.component';
     BrowserModule,
     FormsModule,
     HttpModule,
-    StoreModule.provideStore({ideas: ideasReducer, lines: linesReducer})
+    RouterModule.forRoot(routes),
+    StoreModule.provideStore({
+      ideas: ideasReducer, 
+      lines: linesReducer,
+      docs: docsReducer
+    })
   ],
   providers: [
     IdeasLinesService,

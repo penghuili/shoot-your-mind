@@ -1,9 +1,15 @@
-<div class="card-deck-wrapper">
-  <div class="card-deck">
-    <sym-doc-card></sym-doc-card>
-
-    <sym-doc-card></sym-doc-card>
-
-    <sym-doc-card></sym-doc-card>
+<div class="container">
+  <div class="row">
+    <span class="fa fa-plus-circle"></span>
+  </div>
+  <div class="row">
+    <div class="list-group">
+      <a class="list-group-item list-group-item-action"
+          [routerLink]="[doc.id]"
+          *ngFor="let doc of docs | async">
+        <h5 class="list-group-item-heading">{{doc.title}}</h5>
+        <p class="list-group-item-text">{{doc.description}}</p>
+      </a>
+    </div>
   </div>
 </div>
