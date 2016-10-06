@@ -10,13 +10,13 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/merge';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/takeUntil';
+// import 'rxjs/add/observable/fromEvent';
+// import 'rxjs/add/operator/filter';
+// import 'rxjs/add/operator/map';
+// import 'rxjs/add/operator/merge';
+// import 'rxjs/add/operator/startWith';
+// import 'rxjs/add/operator/switchMap';
+// import 'rxjs/add/operator/takeUntil';
 
 import { EventAndIdea } from '../shared/event-and-idea';
 import { Idea } from '../shared/idea';
@@ -38,11 +38,14 @@ export class MindMapComponent implements OnInit {
     private mousedownPosition: Position;
     private startIdea: Idea;
     private stopIdea: Idea;
+
     private isMovingIdea: boolean = false;
     private isAddingNewLine: boolean = false;
     private isDeletingLine: boolean = false;
+
     private containerLeft: number;
     private containerTop: number;
+
     private mousedownOnIdea$: Subject<EventAndIdea> = new Subject();
     private mousemoveOnContainer$: Subject<MouseEvent> = new Subject();
     private mouseupOnIdea$: Subject<EventAndIdea> = new Subject();
@@ -54,6 +57,7 @@ export class MindMapComponent implements OnInit {
 
     @ViewChild("container") container: ElementRef;
     containerWidth: number;
+
     @Input() ideas: Idea[];
     @Input() lines: Line[];
     @Output() lineCreated = new EventEmitter<Line>();
@@ -61,7 +65,7 @@ export class MindMapComponent implements OnInit {
     @Output() movingLineDeleted = new EventEmitter<Line>();
     @Output() linesDeleted = new EventEmitter<Line[]>();
     @Output() ideaMoving = new EventEmitter<Idea>();
-    @Output() ideaMoved = new EventEmitter<Idea>();
+    @Output() ideaUpdated = new EventEmitter<Idea>();
     @Output() ideaCreated = new EventEmitter<Idea>();
     @Output() ideaDeleted = new EventEmitter<Idea>();
     @Output() centerAdded = new EventEmitter<Idea>();
@@ -89,11 +93,11 @@ export class MindMapComponent implements OnInit {
         this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {              
             if(ei.event.button === 0) {
                 if(this.isMovingIdea) {
-                    this.onUpdateIdea(ei.idea);
+                    this.onIdeaUpdated(ei.idea);
                 }
             } else if(ei.event.button === 2) {
                 if(this.isAddingNewLine) {
-                    this.createNewLine(ei);
+                    this.createLine(ei);
                 }
             }
         });
@@ -120,6 +124,8 @@ export class MindMapComponent implements OnInit {
             if(e.button === 0) {
                 if(this.isDeletingLine) {
                     this.deleteLine();
+                } else if(this.isAddingNewIdea) {
+                    this.isAddingNewIdea = false;
                 } else {
                     this.createIdea(e);
                 }
@@ -147,9 +153,6 @@ export class MindMapComponent implements OnInit {
         let data = {event: e, idea: idea};
         this.mouseupOnIdea$.next(data);
     }
-    onContextmenu(e: MouseEvent) {
-        e.preventDefault();
-    }
     onMousedownOnCanvas(e: MouseEvent) {
         e.stopPropagation();
         this.mousedownOnCanvas$.next(e);
@@ -158,6 +161,7 @@ export class MindMapComponent implements OnInit {
         e.stopPropagation();
         this.mouseupOnCanvas$.next(e);
     }
+
     onNewIdea(idea: Idea) {
         let centerX = this.newIdeaPosition.left + idea.centerX / 2;
         let centerY = this.newIdeaPosition.top + idea.centerY / 2;
@@ -174,16 +178,12 @@ export class MindMapComponent implements OnInit {
         this.ideaDeleted.next(idea);
         this.initHelpData();
     }
-    onUpdateIdea(idea: Idea) {
-        this.ideaMoved.next(idea);
+    onIdeaUpdated(idea: Idea) {
+        this.ideaUpdated.next(idea);
         this.initHelpData();
     }
-    onAddCenter(idea: Idea) {
+    onCenterAdded(idea: Idea) {
         this.centerAdded.next(idea);
-    }
-    onIdeaMoving(idea: Idea) {
-        console.log("idea moving");
-        this.ideaMoving.next(idea);
     }
 
     private initState() {
@@ -209,13 +209,13 @@ export class MindMapComponent implements OnInit {
     private moveIdea(e: MouseEvent) {
         let left = this.startIdea.left + e.pageX - this.mousedownPosition.left;
         let top = this.startIdea.top + e.pageY - this.mousedownPosition.top;
-        let movedIdea = {
+        let idea = {
             id: this.startIdea.id,
             text: this.startIdea.text,
             left: left, 
             top: top
         };
-        this.ideaMoving.next(movedIdea);
+        this.ideaMoving.next(idea);
     }
 
     private createIdea(e: MouseEvent) {
@@ -243,7 +243,7 @@ export class MindMapComponent implements OnInit {
 
 
 
-    private createNewLine(ei: EventAndIdea) {
+    private createLine(ei: EventAndIdea) {
         this.stopIdea = Object.assign({}, ei.idea);
         if(this.stopIdea.id === "createNewLineFailed") {
             this.movingLineDeleted.next(INIT_LINE);

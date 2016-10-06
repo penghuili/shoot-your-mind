@@ -26,7 +26,7 @@ import { Position } from '../shared/position';
 })
 export class IdeaComponent implements AfterViewInit, OnInit {
     @Input() idea: Idea;
-    @Output() addCenter = new EventEmitter<Idea>();
+    @Output() centerAdded = new EventEmitter<Idea>();
     @Output() ideaUpdated = new EventEmitter<Idea>();
     @Output() ideaDeleted = new EventEmitter<Idea>();
     hasNote: boolean = false;
@@ -49,7 +49,7 @@ export class IdeaComponent implements AfterViewInit, OnInit {
         let centerY = this.idea.top + height / 2;
         if(centerX !== this.idea.centerX || centerY !== this.idea.centerY) {
             let data = Object.assign({}, this.idea, {centerX, centerY, width, height});
-            this.addCenter.next(data);
+            this.centerAdded.next(data);
         }
 
         if(this.idea.isEditing === true) {

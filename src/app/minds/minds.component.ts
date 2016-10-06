@@ -49,7 +49,7 @@ export class MindsComponent implements OnInit{
         this.ideasLinesService.moveIdea(idea);
     }
 
-    onIdeaMoved(idea: Idea) {
+    onIdeaUpdated(idea: Idea) {
         this.ideasLinesService.updateIdea(idea);
     } 
 
