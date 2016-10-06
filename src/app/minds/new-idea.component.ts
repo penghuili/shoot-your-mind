@@ -26,7 +26,7 @@ export class NewIdeaComponent implements OnInit {
     ) {}
 
     ngOnInit() {
-        let node = this.er.nativeElement.children[0].children[0];
+        let node = this.er.nativeElement.querySelector("#newText");
         window.getSelection().selectAllChildren(node);
     }
 

@@ -1,0 +1,14 @@
+.container {
+    position: relative;
+    padding: 0;
+}
+
+.btn-group-vertical {
+    position: absolute;
+}
+
+.note {
+    border: #ddd solid 1px;
+    padding: 5px;
+    position: absolute;
+}

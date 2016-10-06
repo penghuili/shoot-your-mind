@@ -17,6 +17,8 @@ import {
     LOAD_LINES,
     UPDATE_LINES,
     ADD_LINE,
+    DELETE_LINES_WHEN_DELETE_IDEA,
+    DELETE_MOVING_LINE,
     DELETE_LINES
 } from './reducers';
 
@@ -49,8 +51,19 @@ export class IdeasLinesService {
 
     deleteIdea(idea: Idea) {
         this.deleteIdeaFromServer(idea);
+        this.deleteLinesWhenDeleteIdeaFromServer(idea);
         this.store.dispatch({type: DELETE_IDEA, payload: idea});
-        this.store.dispatch({type: DELETE_LINES, payload: idea});
+        this.store.dispatch({type: DELETE_LINES_WHEN_DELETE_IDEA, payload: idea});
+    }
+
+    moveIdea(idea: Idea) {
+        this.store.dispatch({type: UPDATE_IDEA, payload: idea});
+    }
+
+    addIdeaCenter(idea: Idea) {
+        this.store.dispatch({type: UPDATE_IDEA, payload: idea});
+        //TODO: if no line on this idea, donot run UPDATE_LINES
+        this.store.dispatch({type: UPDATE_LINES, payload: idea});
     }
 
     loadLines() {
@@ -65,7 +78,23 @@ export class IdeasLinesService {
 
     addLine(line: Line) {
         this.addLineToServer(line);
+        let movingLine = Object.assign({}, line, {id: "addMovingLine"});
+        this.deleteMovingLine(movingLine);
         this.store.dispatch({type: ADD_LINE, payload: line});
+    }
+
+    addMovingLine(line: Line) {
+        this.deleteMovingLine(line);
+        this.store.dispatch({type: ADD_LINE, payload: line});
+    }
+
+    deleteMovingLine(line: Line) {
+        this.store.dispatch({type: DELETE_MOVING_LINE, payload: line});
+    }
+
+    deleteLines(lines: Line[]) {
+        this.deleteLinesFromServer(lines);
+        this.store.dispatch({type: DELETE_LINES, payload: lines});
     }
 
     private updateIdeasInServer(idea: Idea) {
@@ -110,6 +139,36 @@ export class IdeasLinesService {
             } else {
                 return line;
             }
+        });
+        localStorage.setItem("lines", JSON.stringify(lines));
+    }
+
+    private deleteLinesWhenDeleteIdeaFromServer(idea: Idea) {
+        let lines = JSON.parse(localStorage.getItem("lines"));
+        lines = lines.filter(line => {
+            let deleteLine: boolean;
+            if(line.ideaA.id === idea.id) {
+                deleteLine = true;
+            } else if(line.ideaB.id === idea.id) {
+                deleteLine = true;
+            } else {
+                deleteLine = false;
+            }
+            return !deleteLine;
+        });
+        localStorage.setItem("lines", JSON.stringify(lines));
+    }
+
+    private deleteLinesFromServer(ls: Line[]) {
+        let lines = JSON.parse(localStorage.getItem("lines"));
+        lines = lines.filter(line => {
+            let deleteLine: boolean = false;
+            ls.forEach(l => {
+                if(l.id === line.id) {
+                    deleteLine = true;
+                }
+            });
+            return !deleteLine;
         });
         localStorage.setItem("lines", JSON.stringify(lines));
     }

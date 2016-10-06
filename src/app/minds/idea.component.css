@@ -3,8 +3,35 @@
     cursor: default;
 }
 
-.card-block {
-    padding: 0.5rem;
-    margin: 0;
+.card {
     border-radius: 0;
+    margin: 0;
+    padding: 0.5rem;
+}
+
+.card-block {
+    padding: 0;  
+}
+
+p {
+    margin: 0;
+}
+
+span {
+    font-size: 10px;
+    margin-right: 2px;
+}
+
+hr {
+    margin: 0;
+}
+
+.edit {
+    padding: 0.3rem;
+    position: absolute;
+}
+
+.history {
+    top: 0;
+    right: 0;
 }

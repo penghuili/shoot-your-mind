@@ -1,16 +1,22 @@
 <div class="container" #container
     (mousemove)="onMousemoveOnContainer($event)">
-    <canvas #canvas width="480px" height="600px"
+    <sym-canvas
+        [lines]="lines"
+        [width]="containerWidth"
+        (mousedown)="onMousedownOnCanvas($event)"
         (mouseup)="onMouseupOnCanvas($event)">
-    </canvas>
-    <sym-idea *ngFor="let idea of ideas" [idea]="idea"
+    </sym-canvas>
+    <sym-idea *ngFor="let idea of ideas" 
+        [idea]="idea"
         [style.top.px]="idea.top"
         [style.left.px]="idea.left"
-        (deleteIdea)="onDeleteIdea($event)"
-        (addWidthAndHeight)="onAddWidthAndHeight($event)"
+        (addCenter)="onAddCenter($event)"
         (contextmenu)="onContextmenu($event)"
         (mousedown)="onMousedownOnIdea($event, idea)"
-        (mouseup)="onMouseupOnIdea($event, idea)">        
+        (mouseup)="onMouseupOnIdea($event, idea)"
+        (ideaUpdated)="updateIdea($event)"
+        (ideaDeleted)="onIdeaDeleted($event)"
+        >        
     </sym-idea>
     <sym-new-idea 
         [newIdeaPosition]="newIdeaPosition"

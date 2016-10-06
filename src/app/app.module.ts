@@ -11,20 +11,24 @@ import { UtilsService } from './shared/utils.service';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { MindsComponent } from './minds/minds.component';
-import { MindsSidebarComponent } from './minds/minds-sidebar.component';
-import { MindsContentComponent } from './minds/minds-content.component';
+import { DocListComponent } from './minds/doc-list.component';
+import { MindMapComponent } from './minds/mind-map.component';
 import { IdeaComponent } from './minds/idea.component';
 import { NewIdeaComponent } from './minds/new-idea.component';
+import { CanvasComponent } from './minds/canvas.component';
+import { DocCardComponent } from './minds/doc-card.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     MindsComponent,
-    MindsSidebarComponent,
-    MindsContentComponent,
+    DocListComponent,
+    MindMapComponent,
     IdeaComponent,
-    NewIdeaComponent
+    NewIdeaComponent,
+    CanvasComponent,
+    DocCardComponent
   ],
   imports: [
     BrowserModule,

@@ -11,7 +11,9 @@ export const DELETE_IDEA = "DELETE_IDEA";
 export const LOAD_LINES = "LOAD_LINES";
 export const UPDATE_LINES = "UPDATE_LINES";
 export const ADD_LINE = "ADD_LINE";
-export const DELETE_LINES = "DELETE_LINES";
+export const DELETE_LINES_WHEN_DELETE_IDEA = "DELETE_LINES_WHEN_DELETE_IDEA";
+export const DELETE_MOVING_LINE = "DELETE_MOVING_LINE";
+export const DELETE_LINES = "DELETE_LINES"
 
 export interface AppStore {
     ideas: Idea[];
@@ -48,7 +50,7 @@ export const ideasReducer: ActionReducer<Idea[]> =
             case UPDATE_IDEA:
                 return state.map(idea => {
                     if(idea.id === action.payload.id) {
-                        return Object.assign({}, action.payload);
+                        return Object.assign({}, idea, action.payload);
                     } else {
                         return idea;
                     }
@@ -86,10 +88,24 @@ export const linesReducer: ActionReducer<Line[]> = (state: Line[] = [], action: 
             });
         case ADD_LINE:
             return [...state, action.payload];
-        case DELETE_LINES:
+        case DELETE_LINES_WHEN_DELETE_IDEA:
             return state.filter(line => {
                 return line.ideaA.id !== action.payload.id && 
                     line.ideaB.id !== action.payload.id;
+            });
+        case DELETE_MOVING_LINE:
+            return state.filter(line => {
+                return line.id !== "addMovingLine";
+            });
+        case DELETE_LINES:
+            return state.filter(line => {
+                let deleteLine: boolean;
+                action.payload.forEach(l => {
+                    if(l.id === line.id) {
+                        deleteLine = true;
+                    }
+                });
+                return !deleteLine;
             });
         default:
             return state;

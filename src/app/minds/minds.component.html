@@ -1,17 +1,21 @@
 <div class="container">
     <div class="row">
-        <div class="col-sm-3">
-            <sym-minds-sidebar></sym-minds-sidebar>
-        </div>
-        <div class="col-sm-9">
-            <sym-minds-content
-                [ideas]="ideas | async"
-                [lines]="lines | async"
-                (newIdeaCreated)="onNewIdeaCreated($event)"
-                (newLineCreated)="onNewLineCreated($event)"
-                (ideaDeleted)="onIdeaDeleted($event)"
-                (ideaMoved)="onIdeaMoved($event)">
-            </sym-minds-content>
-        </div>
+        <sym-mind-map
+            [ideas]="ideas | async"
+            [lines]="lines | async"
+            (lineMoving)="onLineMoving($event)"
+            (movingLineDeleted)="onMovingLineDeleted($event)"
+            (lineCreated)="onLineCreated($event)"
+            (linesDeleted)="onLinesDeleted($event)"
+            (ideaMoving)="onIdeaMoving($event)"
+            (ideaMoved)="onIdeaMoved($event)"
+            (ideaCreated)="onIdeaCreated($event)"
+            (ideaDeleted)="onIdeaDeleted($event)"
+            (centerAdded)="onCenterAdded($event)">
+        </sym-mind-map>
+    </div>
+
+    <div class="row">
+        <sym-doc-list></sym-doc-list>
     </div>
 </div>

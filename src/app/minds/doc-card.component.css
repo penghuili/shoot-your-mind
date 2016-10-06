@@ -1,0 +1,15 @@
+.card {
+    padding: 0.5rem;
+}
+
+.card-block {
+    padding: 0;
+}
+
+p {
+    margin: 0;
+}
+
+hr {
+    margin: 0.2rem;
+}

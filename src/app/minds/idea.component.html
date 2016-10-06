@@ -1,5 +1,55 @@
-<div class="card card-block">
-  <p class="card-text">{{idea.text}}</p>
-  <button class="btn btn-primary btn-sm"
-      (mouseup)="onClick($event)">delete</button>
+<div class="card text-xs-center">
+  <div class="card-block">
+    <p class="card-title" [attr.id]="idea.id"
+        [attr.contenteditable]="idea.isEditing"
+        (keydown)="onUpdateIdea($event)">{{idea.text}}</p>
+  </div>
+  <hr>
+  <div class="card-block">
+    <span class="fa fa-paint-brush"
+        (click)="onToggleColor($event)"></span>
+    <span class="fa fa-sticky-note" *ngIf="hasNote"
+        (click)="onToggleNote($event)"></span>
+    <span class="fa fa-sticky-note-o" *ngIf="!hasNote"
+        (click)="onToggleNote($event)"></span>
+    <span class="fa fa-history"
+        (click)="onToggleHistory($event)"></span>
+    <span class="fa fa-edit"
+        (click)="onToggleEdit($event)"></span>
+    <span class="fa fa-trash-o"
+        (click)="onDelete($event)"></span>
+  </div>
+</div>
+
+<div class="card text-xs-center edit" *ngIf="showNote">
+  <div class="card-block">
+    <textarea #textarea autofocus cols="10">{{idea.note}}</textarea>
+    <div class="btn-group btn-group-sm" role="group">
+      <button type="button" class="btn btn-secondary btn-sm"
+          (click)="onCancelNote($event)">Cancel</button>
+      <button type="button" class="btn btn-primary btn-sm"
+          (click)="onSaveNote($event, textarea.value)">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="card text-xs-center edit" *ngIf="showColor">
+  <div class="card-block">
+    <span class="fa fa-circle-thin"></span>
+    <span class="fa fa-circle-thin"></span>
+    <span class="fa fa-circle-thin"></span>
+    <span class="fa fa-circle-thin"></span>
+    <span class="fa fa-circle-thin"></span>
+    <span class="fa fa-circle-thin"></span>
+    <span class="fa fa-circle-thin"></span>
+    <span class="fa fa-circle-thin"></span>
+  </div>
+</div>
+
+<div class="card text-xs-center edit history" *ngIf="showHistory">
+  <div class="card-block">
+    <p class="card-title">{{idea.text}}</p>
+    <hr>
+    <p class="card-text">{{idea.note}}</p>
+  </div>
 </div>

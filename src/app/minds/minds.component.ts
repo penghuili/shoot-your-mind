@@ -29,8 +29,24 @@ export class MindsComponent implements OnInit{
         this.ideasLinesService.loadLines();
     }
 
-    onNewLineCreated(line: Line) {
+    onLineCreated(line: Line) {
         this.ideasLinesService.addLine(line);
+    }
+
+    onLineMoving(line: Line) {
+        this.ideasLinesService.addMovingLine(line);
+    }
+
+    onMovingLineDeleted(line: Line) {
+        this.ideasLinesService.deleteMovingLine(line);
+    }
+
+    onLinesDeleted(lines: Line[]) {
+        this.ideasLinesService.deleteLines(lines);
+    }
+
+    onIdeaMoving(idea: Idea) {
+        this.ideasLinesService.moveIdea(idea);
     }
 
     onIdeaMoved(idea: Idea) {
@@ -41,7 +57,11 @@ export class MindsComponent implements OnInit{
         this.ideasLinesService.deleteIdea(idea);
     }
 
-    onNewIdeaCreated(idea: Idea) {
+    onIdeaCreated(idea: Idea) {
         this.ideasLinesService.addIdea(idea);
+    }
+
+    onCenterAdded(idea: Idea) {
+        this.ideasLinesService.addIdeaCenter(idea);
     }
 }
