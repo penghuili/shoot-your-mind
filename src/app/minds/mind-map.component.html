@@ -10,9 +10,10 @@
         [idea]="idea"
         [style.top.px]="idea.top"
         [style.left.px]="idea.left"
-        (centerAdded)="onCenterAdded($event)"
         (mousedown)="onMousedownOnIdea($event, idea)"
         (mouseup)="onMouseupOnIdea($event, idea)"
+        (contextmenu)="onContextmenu($event)"
+        (centerAdded)="onCenterAdded($event)"
         (ideaUpdated)="onIdeaUpdated($event)"
         (ideaDeleted)="onIdeaDeleted($event)"
         >        

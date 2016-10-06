@@ -10,13 +10,6 @@ import {
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
-// import 'rxjs/add/observable/fromEvent';
-// import 'rxjs/add/operator/filter';
-// import 'rxjs/add/operator/map';
-// import 'rxjs/add/operator/merge';
-// import 'rxjs/add/operator/startWith';
-// import 'rxjs/add/operator/switchMap';
-// import 'rxjs/add/operator/takeUntil';
 
 import { EventAndIdea } from '../shared/event-and-idea';
 import { Idea } from '../shared/idea';
@@ -160,6 +153,9 @@ export class MindMapComponent implements OnInit {
     onMouseupOnCanvas(e: MouseEvent) {
         e.stopPropagation();
         this.mouseupOnCanvas$.next(e);
+    }
+    onContextmenu(e: MouseEvent) {
+        e.preventDefault();
     }
 
     onNewIdea(idea: Idea) {
