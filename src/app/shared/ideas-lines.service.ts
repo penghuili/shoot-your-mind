@@ -4,13 +4,18 @@ import { Observable } from 'rxjs/Observable';
 
 import { Idea } from './idea';
 import { Line } from './line';
-import { Doc } from './doc';
+import { Mind } from './mind';
 import { AppStore } from './reducers';
 
 import {
     initialIdeas,
 
-    LOAD_DOCS,
+    LOAD_MINDS,
+    ADD_MIND,
+    DELETE_MIND,
+    UPDATE_MIND,
+    DELETE_MIND_FOREVER,
+    CLEAR_MIND_TRASH,
 
     LOAD_IDEAS,
     UPDATE_IDEA,
@@ -31,56 +36,79 @@ export class IdeasLinesService {
 
     constructor(private store: Store<AppStore>) {}
 
-    loadDocs() {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        let docsInfo: Doc[] = [];
-        docs.forEach(doc => {
+    loadMinds() {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let mindsInfo: Mind[] = [];
+        minds.forEach(mind => {
             let info = {
-                id: doc.id,
-                title: doc.title,
-                description: doc.description
+                id: mind.id,
+                title: mind.title,
+                description: mind.description,
+                deleted: mind.deleted
             };
-            docsInfo.push(info);
+            mindsInfo.push(info);
         });
-        this.store.dispatch({type: LOAD_DOCS, payload: docsInfo});
+        this.store.dispatch({type: LOAD_MINDS, payload: mindsInfo});
     }
 
-    loadIdeasAndLines(docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        let doc = docs.filter(doc => {
-            return doc.id === docId;
+    addMind(mind: Mind) {
+        this.addMindToServer(mind);
+        let newMind = {
+            id: mind.id,
+            title: mind.title,
+            description: mind.description,
+            deleted: mind.deleted
+        };
+        this.store.dispatch({type: ADD_MIND, payload: newMind});
+    }
+
+    deleteMind(mind: Mind) {
+        this.deleteMindFromServer(mind);
+        this.store.dispatch({type: DELETE_MIND, payload: mind});
+    }
+
+    updateMind(mind: Mind) {
+        this.updateMindInServer(mind);
+        this.store.dispatch({type: UPDATE_MIND, payload: mind});
+    }
+
+    deleteMindForever(mind: Mind) {
+        this.deleteMindForeverFromServer(mind);
+        this.store.dispatch({type: DELETE_MIND_FOREVER, payload: mind});
+    }
+
+    clearMindTrash() {
+        this.clearMindTrashFromServer();
+        this.store.dispatch({type: CLEAR_MIND_TRASH, payload: ""});
+    }
+
+    loadIdeasAndLines(mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let mind = minds.filter(mind => {
+            return mind.id === mindId;
         })[0];
-        let ideas = doc.ideas;
-        let lines = doc.lines;
+        let ideas = mind.ideas;
+        let lines = mind.lines;
         this.store.dispatch({type: LOAD_IDEAS, payload: ideas});
         this.store.dispatch({type: LOAD_LINES, payload: lines});
+        return mind.deleted;
     }
 
-    loadIdeas() {
-        if(localStorage.getItem("ideas")) {
-            let ideas = JSON.parse(localStorage.getItem("ideas"));
-            this.store.dispatch({type: LOAD_IDEAS, payload: ideas});
-        } else {
-            console.log("use default ideas");
-            localStorage.setItem("ideas", JSON.stringify(initialIdeas));
-        }
-    }
-
-    updateIdea(idea: Idea) {
-        this.updateIdeasInServer(idea, "doc1");
-        this.updateLinesInServer(idea, "doc1");
+    updateIdea(idea: Idea, mindId: string) {
+        this.updateIdeasInServer(idea, mindId);
+        this.updateLinesInServer(idea, mindId);
         this.store.dispatch({type: UPDATE_IDEA, payload: idea});
         this.store.dispatch({type: UPDATE_LINES, payload: idea});
     }
 
-    addIdea(idea: Idea) {
-        this.addIdeaToServer(idea, "doc1");
+    addIdea(idea: Idea, mindId: string) {
+        this.addIdeaToServer(idea, mindId);
         this.store.dispatch({type: ADD_IDEA, payload: idea});
     }
 
-    deleteIdea(idea: Idea) {
-        this.deleteIdeaFromServer(idea, "doc1");
-        this.deleteLinesWhenDeleteIdeaFromServer(idea, "doc1");
+    deleteIdea(idea: Idea, mindId: string) {
+        this.deleteIdeaFromServer(idea, mindId);
+        this.deleteLinesWhenDeleteIdeaFromServer(idea, mindId);
         this.store.dispatch({type: DELETE_IDEA, payload: idea});
         this.store.dispatch({type: DELETE_LINES_WHEN_DELETE_IDEA, payload: idea});
     }
@@ -89,8 +117,8 @@ export class IdeasLinesService {
         this.store.dispatch({type: UPDATE_IDEA, payload: idea});
     }
 
-    selectIdea(idea: Idea) {
-        this.selectIdeaFromServer(idea, "doc1");
+    selectIdea(idea: Idea, mindId: string) {
+        this.selectIdeaFromServer(idea, mindId);
         this.store.dispatch({type: SELECT_IDEA, payload: idea});
     }
 
@@ -100,18 +128,8 @@ export class IdeasLinesService {
         this.store.dispatch({type: UPDATE_LINES, payload: idea});
     }
 
-    loadLines() {
-        if(localStorage.getItem("lines")) {
-            let lines = JSON.parse(localStorage.getItem("lines"));
-            this.store.dispatch({type: LOAD_LINES, payload: lines});
-        } else {
-            console.log("use default lines");
-            localStorage.setItem("lines", JSON.stringify([]));
-        }
-    }  
-
-    addLine(line: Line) {
-        this.addLineToServer(line, "doc1");
+    addLine(line: Line, mindId: string) {
+        this.addLineToServer(line, mindId);
         let movingLine = Object.assign({}, line, {id: "addMovingLine"});
         this.deleteMovingLine(movingLine);
         this.store.dispatch({type: ADD_LINE, payload: line});
@@ -126,63 +144,109 @@ export class IdeasLinesService {
         this.store.dispatch({type: DELETE_MOVING_LINE, payload: line});
     }
 
-    deleteLines(lines: Line[]) {
-        this.deleteLinesFromServer(lines, "doc1");
+    deleteLines(lines: Line[], mindId: string) {
+        this.deleteLinesFromServer(lines, mindId);
         this.store.dispatch({type: DELETE_LINES, payload: lines});
     }
 
-    private updateIdeasInServer(idea: Idea, docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.ideas = doc.ideas.map(i => {
+    private addMindToServer(mind: Mind) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds.unshift(mind);
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private deleteMindFromServer(mind: Mind) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(m => {
+            if(m.id === mind.id) {
+                return Object.assign({}, m, {deleted: true});
+            } else {
+                return m;
+            }
+        });
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private updateMindInServer(mind: Mind) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(m => {
+            if(m.id === mind.id) {
+                return Object.assign({}, mind);
+            } else {
+                return m;
+            }
+        });
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private deleteMindForeverFromServer(mind: Mind) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.filter(m => {
+            return m.id !== mind.id;
+        });
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private clearMindTrashFromServer() {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.filter(m => {
+            return !m.deleted;
+        });
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private updateIdeasInServer(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.ideas = mind.ideas.map(i => {
                     if(i.id === idea.id) {
                         return Object.assign({}, idea);
                     } else {
                         return i;
                     }
                 });
-                return doc;
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
-    private addIdeaToServer(idea: Idea, docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.ideas = [...doc.ideas, idea];
-                return doc;
+    private addIdeaToServer(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.ideas = [...mind.ideas, idea];
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
-    private deleteIdeaFromServer(idea: Idea, docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.ideas = doc.ideas.filter(i => {
+    private deleteIdeaFromServer(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.ideas = mind.ideas.filter(i => {
                     return i.id !== idea.id;
                 });
-                return doc;
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
-    private selectIdeaFromServer(idea: Idea, docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.ideas = doc.ideas.map(i => {
+    private selectIdeaFromServer(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.ideas = mind.ideas.map(i => {
                     if(i.id === idea.id) {
                         if(i.isSelected) {
                             return Object.assign({}, i, {isSelected: false});
@@ -193,19 +257,19 @@ export class IdeasLinesService {
                         return Object.assign({}, i, {isSelected: false});
                     }
                 });
-                return doc;
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
-    private updateLinesInServer(idea: Idea, docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.lines = doc.lines.map(line => {
+    private updateLinesInServer(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.lines = mind.lines.map(line => {
                     if(line.ideaA.id === idea.id) {
                         return {
                             ideaA: Object.assign({}, idea),
@@ -220,19 +284,19 @@ export class IdeasLinesService {
                         return line;
                     }
                 });
-                return doc;
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
-    private deleteLinesWhenDeleteIdeaFromServer(idea: Idea, docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.lines = doc.lines.filter(line => {
+    private deleteLinesWhenDeleteIdeaFromServer(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.lines = mind.lines.filter(line => {
                     let deleteLine: boolean;
                     if(line.ideaA.id === idea.id) {
                         deleteLine = true;
@@ -243,19 +307,19 @@ export class IdeasLinesService {
                     }
                     return !deleteLine;
                 });
-                return doc;
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
-    private deleteLinesFromServer(ls: Line[], docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.lines = doc.lines.filter(line => {
+    private deleteLinesFromServer(ls: Line[], mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.lines = mind.lines.filter(line => {
                     let deleteLine: boolean = false;
                     ls.forEach(l => {
                         if(l.id === line.id) {
@@ -264,24 +328,24 @@ export class IdeasLinesService {
                     });
                     return !deleteLine;
                 });
-                return doc;
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
-    private addLineToServer(line: Line, docId: string) {
-        let docs = JSON.parse(localStorage.getItem("sym-docs"));
-        docs = docs.map(doc => {
-            if(doc.id === docId) {
-                doc.lines = [...doc.lines, line];
-                return doc;
+    private addLineToServer(line: Line, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds = minds.map(mind => {
+            if(mind.id === mindId) {
+                mind.lines = [...mind.lines, line];
+                return mind;
             } else {
-                return doc;
+                return mind;
             }
         });        
-        localStorage.setItem("sym-docs", JSON.stringify(docs));
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 }

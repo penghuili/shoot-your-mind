@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
 import { MindsComponent } from './minds/minds.component';
-import { DocListComponent } from './minds/doc-list.component';
+import { MindsListComponent } from './minds/minds-list.component';
 
 export const routes: Routes = [
     {
@@ -10,10 +10,10 @@ export const routes: Routes = [
         component: HomeComponent, 
         pathMatch: "full"},
     {
-        path: "docs",
+        path: "minds",
         children: [
-            {path: "", component: DocListComponent},
-            {path: ":docId", component: MindsComponent}
+            {path: "", component: MindsListComponent},
+            {path: ":mindId", component: MindsComponent}
         ]
     }
 ];

@@ -1,3 +1,6 @@
 canvas {
-    border: #ddd solid 1px;
+    border-style: solid;
+    border-width: 1px;
+    display: block;
+    margin: 0 auto;
 }

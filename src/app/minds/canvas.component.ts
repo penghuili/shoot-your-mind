@@ -16,14 +16,16 @@ import { Line } from '../shared/line';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CanvasComponent implements OnChanges {
+  @Input() canvasWidth: number;
+  @Input() canvasHeight: number;
+  @Input() isMindDeleted: boolean;
   @Input() lines: Line[];
-  @Input() width: number;
   @ViewChild("canvas") canvas: ElementRef;
   ctx: CanvasRenderingContext2D;
 
   ngOnChanges() {
     this.ctx = this.canvas.nativeElement.getContext("2d");
-    this.ctx.clearRect(0, 0, this.width, 600);
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.drawLines();
   }
 

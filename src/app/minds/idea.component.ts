@@ -68,40 +68,52 @@ export class IdeaComponent implements AfterViewInit, OnInit {
     }
 
     onToggleNote(e: MouseEvent) {
-        e.stopPropagation();
+        this.stopPropagationPlease(e);
         this.showNote = !this.showNote;
     }
 
     onToggleColor(e: MouseEvent) {
-        e.stopPropagation();
+        this.stopPropagationPlease(e);
         this.showColor = !this.showColor;
     }
 
     onToggleHistory(e: MouseEvent) {
-        e.stopPropagation();
+        this.stopPropagationPlease(e);
         this.showHistory = !this.showHistory;
     }
 
     onToggleEdit(e: MouseEvent) {
-        e.stopPropagation();
+        this.stopPropagationPlease(e);
         let idea = Object.assign({}, this.idea, {isEditing: !this.idea.isEditing});
         this.ideaUpdated.next(idea);
     }
 
     onDelete(e: MouseEvent) {
-        e.stopPropagation();
+        this.stopPropagationPlease(e);
+        console.log("delete");
         this.ideaDeleted.next(this.idea);
     }
 
     onCancelNote(e: MouseEvent) {
-        e.stopPropagation();
+        this.stopPropagationPlease(e);
         this.showNote = false;
     }
 
     onSaveNote(e: MouseEvent, note: string) {
-        e.stopPropagation();
+        this.stopPropagationPlease(e);
         let idea = Object.assign({}, this.idea, {note});
         this.ideaUpdated.next(idea);
         this.showNote = false;
+    }
+
+    stopPropagationPlease(e: MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    changeColor(e: MouseEvent, color: string) {
+        this.stopPropagationPlease(e);
+        let idea = Object.assign({}, this.idea, {backgroundColor: color});
+        this.ideaUpdated.next(idea);
     }
 }

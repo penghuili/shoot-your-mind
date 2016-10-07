@@ -1,4 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { 
+    Component, 
+    OnInit,
+    OnDestroy
+} from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
@@ -11,14 +15,16 @@ import { Line } from '../shared/line';
 
 @Component({
     selector: "sym-minds",
-    templateUrl: "./minds.component.html"
+    templateUrl: "./minds.component.html",
+    styleUrls: ["./minds.component.css"]
 })
-export class MindsComponent implements OnInit{
+export class MindsComponent implements OnInit, OnDestroy {
     ideas: Observable<Idea[]>;
     lines: Observable<Line[]>;
+    isMindDeleted: boolean;
 
     private routeSub: any;
-    private docId: string;
+    private mindId: string;
 
     constructor(
         private ideasLinesService: IdeasLinesService,
@@ -29,15 +35,19 @@ export class MindsComponent implements OnInit{
 
     ngOnInit() {
         this.routeSub = this.route.params.subscribe(params => {
-            this.docId = params["docId"];
+            this.mindId = params["mindId"];
         });
         this.ideas = this.store.select("ideas");
         this.lines = this.store.select("lines");
-        this.ideasLinesService.loadIdeasAndLines(this.docId);
+        this.isMindDeleted = this.ideasLinesService.loadIdeasAndLines(this.mindId);
+    }
+
+    ngOnDestroy() {
+        this.routeSub.unsubscribe();
     }
 
     onLineCreated(line: Line) {
-        this.ideasLinesService.addLine(line);
+        this.ideasLinesService.addLine(line, this.mindId);
     }
 
     onLineMoving(line: Line) {
@@ -49,7 +59,7 @@ export class MindsComponent implements OnInit{
     }
 
     onLinesDeleted(lines: Line[]) {
-        this.ideasLinesService.deleteLines(lines);
+        this.ideasLinesService.deleteLines(lines, this.mindId);
     }
 
     onIdeaMoving(idea: Idea) {
@@ -57,19 +67,19 @@ export class MindsComponent implements OnInit{
     }
 
     onIdeaUpdated(idea: Idea) {
-        this.ideasLinesService.updateIdea(idea);
+        this.ideasLinesService.updateIdea(idea, this.mindId);
     } 
 
     onIdeaDeleted(idea: Idea) {
-        this.ideasLinesService.deleteIdea(idea);
+        this.ideasLinesService.deleteIdea(idea, this.mindId);
     }
 
     onIdeaCreated(idea: Idea) {
-        this.ideasLinesService.addIdea(idea);
+        this.ideasLinesService.addIdea(idea, this.mindId);
     }
 
     onIdeaSelected(idea: Idea) {
-        this.ideasLinesService.selectIdea(idea);
+        this.ideasLinesService.selectIdea(idea, this.mindId);
     }
 
     onCenterAdded(idea: Idea) {

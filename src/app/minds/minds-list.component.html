@@ -1,0 +1,87 @@
+<div class="container mind-list-container">
+  <div class="row">
+    <div class="btns">
+      <button type="button" class="btn btn-danger btn-sm"
+          *ngIf="showDeleted"
+          (click)="onClearTrash($event)">Clear Trash</button>
+      <button type="button" class="btn btn-primary btn-sm"
+          (click)="onShowAddNew($event)">New Mind</button>
+    </div>
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="showActive" (click)="onShowActive($event)">Active</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="showDeleted" (click)="onShowDeleted($event)">Trash</a>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+      <div class="tab-pane" role="tabpanel" [class.active]="showActive">
+        <div class="list-group">
+          <a class="list-group-item list-group-item-action"
+              [routerLink]="[mind.id]"
+              *ngFor="let mind of activeMinds">
+            <span class="fa fa-trash-o pull-sm-right" (click)="onDelete($event, mind)"></span>
+            <span class="fa fa-edit pull-sm-right" (click)="onEdit($event, mind)"></span>
+            <h5 class="list-group-item-heading">{{mind.title}}</h5>
+            <p class="list-group-item-text">{{mind.description}}</p>
+          </a>
+          <p class="list-group-item" *ngIf="noActiveMinds">You haven't create Minds.</p>
+        </div>
+      </div>
+      <div class="tab-pane" role="tabpanel" [class.active]="showDeleted">
+        <div class="list-group">
+          <a class="list-group-item list-group-item-action"
+              [routerLink]="[mind.id]"
+              *ngFor="let mind of deletedMinds">
+              <span class="fa fa-trash pull-sm-right" 
+                  (click)="onDeleteForever($event, mind)"></span>
+              <span class="fa fa-undo pull-sm-right"
+                  (click)="onRecover($event, mind)"></span>
+            <h5 class="list-group-item-heading">{{mind.title}}</h5>
+            <p class="list-group-item-text">{{mind.description}}</p>
+          </a>
+          <p class="list-group-item" *ngIf="noDeletedMinds">There are no deleted minds.</p>
+        </div>
+      </div>
+      <div class="tab-pane" role="tabpanel" [class.active]="showAddNew">
+        <div class="container form-container">
+          <form [formGroup]="newMindForm" (ngSubmit)="onAddMind()">
+            <div class="form-group row">
+              <label for="title" class="col-sm-2 col-form-label">Title *</label>
+              <div class="col-sm-10">
+                <input type="text" name="title" class="form-control" id="title" 
+                    placeholder="Title" autofocus [formControl]="title">
+                <p class="form-text help-text" *ngIf="title.invalid && title.touched">
+                    Title is required.</p>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="description" class="col-sm-2 col-form-label">Description</label>
+              <div class="col-sm-10">
+                <textarea rows="3" name="description" class="form-control" id="description" 
+                    placeholder="What do you want to make clear?"[formControl]="description"></textarea>
+              </div>
+            </div>
+            <div class="form-group row">
+              <div class="offset-sm-2 col-sm-10">
+                <button type="button" class="btn btn-secondary btn-sm"
+                    (click)="onCancel()">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm"
+                    *ngIf="isEditing"
+                    (click)="onUpdate($event)"
+                    [disabled]="newMindForm.invalid">Update</button>
+                <button type="submit" class="btn btn-primary btn-sm"
+                    *ngIf="!isEditing"
+                    [disabled]="newMindForm.invalid">Save</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<sym-footer></sym-footer>

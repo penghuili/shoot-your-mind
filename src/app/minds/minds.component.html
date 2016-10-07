@@ -1,8 +1,8 @@
-<div class="container">
-    <div class="row">
+
         <sym-mind-map
             [ideas]="ideas | async"
             [lines]="lines | async"
+            [isMindDeleted]="isMindDeleted"
             (lineMoving)="onLineMoving($event)"
             (movingLineDeleted)="onMovingLineDeleted($event)"
             (lineCreated)="onLineCreated($event)"
@@ -14,5 +14,3 @@
             (ideaSelected)="onIdeaSelected($event)"
             (centerAdded)="onCenterAdded($event)">
         </sym-mind-map>
-    </div>
-</div>

@@ -1,10 +1,11 @@
 import { Idea } from './idea';
 import { Line } from './line';
 
-export class Doc {
+export class Mind {
     id: string;
     title: string;
-    description: string;
+    description?: string;
+    deleted?: boolean;
     ideas?: Idea[];
     lines?: Line[];
 }

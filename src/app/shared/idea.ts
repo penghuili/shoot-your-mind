@@ -10,4 +10,5 @@ export class Idea {
     centerY?: number;
     isEditing?: boolean;
     isSelected?: boolean;
+    backgroundColor?: string;
 }

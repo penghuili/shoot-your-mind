@@ -35,3 +35,35 @@ hr {
     top: 0;
     right: 0;
 }
+
+.fa-circle.white {
+    color: #E6E6FA;
+}
+
+.fa-circle.red {
+    color: #F08080;
+}
+
+.fa-circle.orange {
+    color: #F4A460;
+}
+
+.fa-circle.yellow {
+    color: #F0E68C;
+}
+
+.fa-circle.grey {
+    color: #E6E6FA;
+}
+
+.fa-circle.blue {
+    color: #87CEFA;
+}
+
+.fa-circle.teal {
+    color: #AFEEEE;
+}
+
+.fa-circle.green {
+    color: #98FB98;
+}

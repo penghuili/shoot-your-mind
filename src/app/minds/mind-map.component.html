@@ -1,8 +1,10 @@
-<div class="container" #container
+<div class="map-wrapper" #mapWrapper
     (mousemove)="onMousemoveOnContainer($event)">
     <sym-canvas
         [lines]="lines"
-        [width]="containerWidth"
+        [canvasWidth]="canvasWidth"
+        [canvasHeight]="canvasHeight"
+        [isMindDeleted]="isMindDeleted"
         (mousedown)="onMousedownOnCanvas($event)"
         (mouseup)="onMouseupOnCanvas($event)">
     </sym-canvas>

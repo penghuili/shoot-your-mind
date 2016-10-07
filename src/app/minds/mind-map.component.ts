@@ -48,11 +48,13 @@ export class MindMapComponent implements OnInit {
     isAddingNewIdea = false;
     newIdeaPosition: Position;
 
-    @ViewChild("container") container: ElementRef;
-    containerWidth: number;
+    @ViewChild("mapWrapper") mapWrapper: ElementRef;
+    canvasWidth: number;
+    canvasHeight: number;
 
     @Input() ideas: Idea[];
     @Input() lines: Line[];
+    @Input() isMindDeleted: boolean;
     @Output() lineCreated = new EventEmitter<Line>();
     @Output() lineMoving = new EventEmitter<Line>();
     @Output() movingLineDeleted = new EventEmitter<Line>();
@@ -192,9 +194,10 @@ export class MindMapComponent implements OnInit {
             }).subscribe((e: KeyboardEvent) => {
                 this.isAddingNewIdea = false;
             });
-        this.containerWidth = this.container.nativeElement.offsetWidth;
-        this.containerLeft = this.getContainerPosition(this.container.nativeElement, "offsetLeft");
-        this.containerTop = this.getContainerPosition(this.container.nativeElement, "offsetTop");
+        this.canvasWidth = window.innerWidth * 0.95;
+        this.canvasHeight = window.innerHeight * 0.85;
+        this.containerLeft = this.getContainerPosition(this.mapWrapper.nativeElement, "offsetLeft");
+        this.containerTop = this.getContainerPosition(this.mapWrapper.nativeElement, "offsetTop");
     }
 
     private recordMousedownState(ei: EventAndIdea) {

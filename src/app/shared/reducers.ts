@@ -2,9 +2,14 @@ import { ActionReducer, Action } from '@ngrx/store';
 
 import { Idea } from './idea';
 import { Line } from './line';
-import { Doc } from './doc';
+import { Mind } from './mind';
 
-export const LOAD_DOCS = "LOAD_DOCS";
+export const LOAD_MINDS = "LOAD_MINDS";
+export const ADD_MIND = "ADD_MIND";
+export const DELETE_MIND = "DELETE_MIND";
+export const UPDATE_MIND = "UPDATE_MIND";
+export const DELETE_MIND_FOREVER = "DELETE_MIND_FOREVER";
+export const CLEAR_MIND_TRASH = "CLEAR_MIND_TRASH";
 
 export const LOAD_IDEAS = "LOAD_IDEAS";
 export const UPDATE_IDEA = "UPDATE_IDEA";
@@ -22,7 +27,7 @@ export const SELECT_IDEA = "SELECT_IDEA";
 export interface AppStore {
     ideas: Idea[];
     lines: Line[];
-    docs: Doc[];
+    minds: Mind[];
 }
 
 export const initialIdeas: Idea[] = [
@@ -46,10 +51,36 @@ export const initialIdeas: Idea[] = [
     }
 ];
 
-export const docsReducer: ActionReducer<Doc[]> = (state: Doc[] = [], action: Action) => {
+export const mindsReducer: ActionReducer<Mind[]> = (state: Mind[] = [], action: Action) => {
     switch(action.type) {
-        case LOAD_DOCS:
+        case LOAD_MINDS:
             return action.payload;
+        case ADD_MIND:
+            return [action.payload, ...state];
+        case DELETE_MIND:
+            return state.map(mind => {
+                if(mind.id === action.payload.id) {
+                    return Object.assign({}, mind, {deleted: true});
+                } else {
+                    return mind;
+                }
+            });
+        case UPDATE_MIND:
+            return state.map(mind => {
+                if(mind.id === action.payload.id) {
+                    return Object.assign({}, action.payload);
+                } else {
+                    return mind;
+                }
+            });
+        case DELETE_MIND_FOREVER:
+            return state.filter(mind => {
+                return mind.id !== action.payload.id;
+            });
+        case CLEAR_MIND_TRASH:
+            return state.filter(mind => {
+                return !mind.deleted;
+            });
         default:
             return state;
     }
