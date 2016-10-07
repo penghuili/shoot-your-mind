@@ -6,6 +6,6 @@ export class Mind {
     title: string;
     description?: string;
     deleted?: boolean;
-    ideas?: Idea[];
-    lines?: Line[];
+    ideas?: any;
+    lines?: any;
 }

@@ -86,8 +86,8 @@ export class MindsListComponent implements OnInit {
             title: this.title.value,
             description: this.description.value,
             deleted: false,
-            ideas: [],
-            lines: []
+            ideas: {},
+            lines: {}
         };
         this.ideasLinesService.addMind(mind);
         this.resetForm();

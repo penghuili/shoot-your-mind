@@ -9,7 +9,6 @@ import {
 
 import { Position } from '../shared/position';
 import { Idea } from '../shared/idea';
-import { UtilsService } from '../shared/utils.service';
 
 @Component({
     selector: "sym-new-idea",
@@ -21,8 +20,7 @@ export class NewIdeaComponent implements OnInit {
     @Output() newIdea = new EventEmitter<Idea>();
 
     constructor(
-        private er: ElementRef,
-        private utils: UtilsService
+        private er: ElementRef
     ) {}
 
     ngOnInit() {
@@ -34,7 +32,7 @@ export class NewIdeaComponent implements OnInit {
         e.preventDefault();
         let node = <HTMLParagraphElement>e.target;
         let newIdea = {
-            id: this.utils.createUUID(),
+            id: "idea" + new Date().getTime(),
             text: node.innerText,
             left: 0,
             top: 0,

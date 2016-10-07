@@ -9,7 +9,6 @@ import { Observable } from 'rxjs/Observable';
 
 import { AppStore } from '../shared/reducers';
 import { IdeasLinesService } from '../shared/ideas-lines.service';
-import { UtilsService } from '../shared/utils.service';
 import { Idea } from '../shared/idea';
 import { Line } from '../shared/line';
 
@@ -28,7 +27,6 @@ export class MindsComponent implements OnInit, OnDestroy {
 
     constructor(
         private ideasLinesService: IdeasLinesService,
-        private utils: UtilsService,
         private route: ActivatedRoute,
         private store: Store<AppStore>
     ) {}

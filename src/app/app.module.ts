@@ -14,7 +14,6 @@ import {
   mindsReducer
 } from './shared/reducers';
 import { IdeasLinesService } from './shared/ideas-lines.service';
-import { UtilsService } from './shared/utils.service';
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
@@ -51,8 +50,7 @@ import { SymFooterComponent } from './shared/sym-footer/sym-footer.component';
     })
   ],
   providers: [
-    IdeasLinesService,
-    UtilsService
+    IdeasLinesService
   ],
   bootstrap: [AppComponent]
 })

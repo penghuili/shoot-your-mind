@@ -15,7 +15,6 @@ import { EventAndIdea } from '../shared/event-and-idea';
 import { Idea } from '../shared/idea';
 import { Line } from '../shared/line';
 import { Position } from '../shared/position';
-import { UtilsService } from '../shared/utils.service';
 import {
     INIT_POSITION,
     INIT_IDEA,
@@ -66,7 +65,7 @@ export class MindMapComponent implements OnInit {
     @Output() ideaSelected = new EventEmitter<Idea>();
     @Output() centerAdded = new EventEmitter<Idea>();
 
-    constructor(private utils: UtilsService) {}
+    constructor() {}
 
     ngOnInit() {
         this.initState();
