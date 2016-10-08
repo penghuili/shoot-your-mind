@@ -25,9 +25,9 @@ export const DELETE_LINES = "DELETE_LINES";
 export const SELECT_IDEA = "SELECT_IDEA";
 
 export interface AppStore {
-    ideas: Idea[];
-    lines: Line[];
-    minds: Mind[];
+    ideas: {string: Idea};
+    lines: {string: Line};
+    minds: {string: Mind};
 }
 
 export const initialIdeas: Idea[] = [

@@ -1,6 +1,10 @@
 import { Idea } from './idea';
+
 export class Line {
     id: string;
-    ideaA: Idea;
-    ideaB: Idea;
+    ideaAId: string;
+    ideaBId: string;
+    deleted: boolean;
+    ideaA?: Idea;
+    ideaB?: Idea;
 }

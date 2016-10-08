@@ -21,9 +21,13 @@ export class MindsComponent implements OnInit, OnDestroy {
     ideas: Observable<Idea[]>;
     lines: Observable<Line[]>;
     isMindDeleted: boolean;
+    linesWithIdea: Line[];
 
     private routeSub: any;
+    private linesSub: any;
+    private ideasSub: any;
     private mindId: string;
+    private linesWithoutIdea: Line[];
 
     constructor(
         private ideasLinesService: IdeasLinesService,
@@ -37,6 +41,14 @@ export class MindsComponent implements OnInit, OnDestroy {
         });
         this.ideas = this.store.select("ideas");
         this.lines = this.store.select("lines");
+        this.linesSub = this.lines.subscribe(ls => {
+            this.linesWithoutIdea = ls;
+        });
+        this.ideasSub = this.ideas.subscribe(is => {
+            this.linesWithIdea = this.linesWithoutIdea.map(l => {
+                
+            });
+        });
         this.isMindDeleted = this.ideasLinesService.loadIdeasAndLines(this.mindId);
     }
 
