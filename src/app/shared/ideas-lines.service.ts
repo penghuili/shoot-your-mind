@@ -8,8 +8,6 @@ import { Mind } from './mind';
 import { AppStore } from './reducers';
 
 import {
-    initialIdeas,
-
     LOAD_MINDS,
     ADD_MIND,
     DELETE_MIND,
@@ -90,11 +88,20 @@ export class IdeasLinesService {
         let lines = mind.lines;
         let ideasKeys = Object.keys(ideas);
         let linesKeys = Object.keys(lines);
-        let ideasForStore = ideasKeys.map(k => {
-            return ideas[k].history[0];
-        });
-        let linesForStore = linesKeys.map(k => {
-            return lines[k].line;
+        let ideasForStore = [];
+        ideasKeys.forEach(k => {
+                if(!ideas[k].deleted) {
+                    ideasForStore.push(ideas[k].history[0]);
+                }
+            });
+        let linesForStore = [];
+        linesKeys.forEach(k => {
+            if(!lines[k].deleted) {
+                let ll = lines[k].line;
+                let ideaA = this.getIdea(ideasForStore, ll.ideaAId);
+                let ideaB = this.getIdea(ideasForStore, ll.ideaBId);
+                linesForStore.push(Object.assign({}, ll, {ideaA, ideaB}));
+            }
         });
         this.store.dispatch({type: LOAD_IDEAS, payload: ideasForStore});
         this.store.dispatch({type: LOAD_LINES, payload: linesForStore});
@@ -104,11 +111,13 @@ export class IdeasLinesService {
     addUpdatedIdeaToHistory(idea: Idea, mindId: string) {
         this.addUpdatedIdeaToHistoryInServer(idea, mindId);
         this.store.dispatch({type: UPDATE_IDEA, payload: idea});
+        this.store.dispatch({type: UPDATE_LINES, payload: idea});
     }
 
     updateTheLatestIdeaInHistory(idea: Idea, mindId: string) {
         this.updateTheLatestIdeaInHistoryInServer(idea, mindId);
         this.store.dispatch({type: UPDATE_IDEA, payload: idea});
+        this.store.dispatch({type: UPDATE_LINES, payload: idea});
     }
 
     addIdea(idea: Idea, mindId: string) {
@@ -125,22 +134,19 @@ export class IdeasLinesService {
 
     moveIdea(idea: Idea) {
         this.store.dispatch({type: UPDATE_IDEA, payload: idea});
-    }
-
-    selectIdea(idea: Idea, mindId: string) {
-        this.selectIdeaFromServer(idea, mindId);
-        this.store.dispatch({type: SELECT_IDEA, payload: idea});
-    }
-
-    addIdeaCenter(idea: Idea) {
-        this.store.dispatch({type: UPDATE_IDEA, payload: idea});
+        this.store.dispatch({type: UPDATE_LINES, payload: idea});
     }
 
     addLine(line: Line, mindId: string) {
         this.addLineToServer(line, mindId);
         let movingLine = Object.assign({}, line, {id: "addMovingLine"});
         this.deleteMovingLine(movingLine);
-        this.store.dispatch({type: ADD_LINE, payload: line});
+        let lineForStore = {
+            id: line.id,
+            ideaA: line.ideaA,
+            ideaB: line.ideaB
+        }
+        this.store.dispatch({type: ADD_LINE, payload: lineForStore});
     }
 
     addMovingLine(line: Line) {
@@ -194,6 +200,7 @@ export class IdeasLinesService {
 
     private addUpdatedIdeaToHistoryInServer(idea: Idea, mindId: string) {
         let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        minds[mindId].ideas[idea.id].history[0].isEditing = false; 
         minds[mindId].ideas[idea.id].history.unshift(idea);       
         localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
@@ -221,36 +228,6 @@ export class IdeasLinesService {
         delete minds[mindId].ideas[idea.id];        
         localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
-
-    private selectIdeaFromServer(idea: Idea, mindId: string) {
-        let selectedIdea = Object.assign({}, idea, {isSelected: true});
-        this.updateTheLatestIdeaInHistoryInServer(selectedIdea, mindId);
-    }
-
-    // private updateLinesInServer(idea: Idea, mindId: string) {
-    //     let minds = JSON.parse(localStorage.getItem("sym-minds"));
-    //     let lines = minds[mindId].lines;
-    //     let linesKeys = Object.keys(lines);
-    //     linesKeys.forEach(k => {
-    //         if(lines[k].ideaAId === idea.id) {
-    //             lines[k].history.unshift(
-    //                 Object.assign(
-    //                 {}, 
-    //                 lines[k].history[0], 
-    //                 {ideaA: Object.assign({}, idea)})
-    //             );
-    //         } else if(lines[k].ideaBId === idea.id) {
-    //             lines[k].history.unshift(
-    //                 Object.assign(
-    //                 {}, 
-    //                 lines[k].history[0], 
-    //                 {ideaB: Object.assign({}, idea)})
-    //             );
-    //         }
-    //     });
-    //     minds[mindId].lines = lines;       
-    //     localStorage.setItem("sym-minds", JSON.stringify(minds));
-    // }
 
     private deleteLinesWhenDeleteIdeaFromServer(idea: Idea, mindId: string) {
         let minds = JSON.parse(localStorage.getItem("sym-minds"));
@@ -297,12 +274,21 @@ export class IdeasLinesService {
 
     private addLineToServer(line: Line, mindId: string) {
         let minds = JSON.parse(localStorage.getItem("sym-minds"));
-        minds[mindId].lines[line.id] = {
-            line: line,
+        let lineForServer = {
+            id: line.id,
             ideaAId: line.ideaAId,
-            ideaBId: line.ideaBId,
+            ideaBId: line.ideaBId
+        };
+        minds[mindId].lines[line.id] = {
+            line: lineForServer,
             deleted: false
         };       
         localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private getIdea(ideas: Idea[], id: string) {
+        return ideas.filter(i => {
+            return i.id === id;
+        })[0];
     }
 }

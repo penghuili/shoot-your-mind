@@ -26,13 +26,13 @@ import { Position } from '../shared/position';
 })
 export class IdeaComponent implements AfterViewInit, OnInit {
     @Input() idea: Idea;
-    @Output() centerAdded = new EventEmitter<Idea>();
-    @Output() ideaUpdated = new EventEmitter<Idea>();
+    // @Output() centerAdded = new EventEmitter<Idea>();
+    @Output() ideaContentUpdated = new EventEmitter<Idea>();
     @Output() ideaDeleted = new EventEmitter<Idea>();
+    @Output() ideaMetadataUpdated = new EventEmitter<Idea>();
     hasNote: boolean = false;
     showNote: boolean = false;
     showColor: boolean = false;
-    showHistory: boolean = false;
 
     constructor(private er: ElementRef) {}
 
@@ -49,7 +49,7 @@ export class IdeaComponent implements AfterViewInit, OnInit {
         let centerY = this.idea.top + height / 2;
         if(centerX !== this.idea.centerX || centerY !== this.idea.centerY) {
             let data = Object.assign({}, this.idea, {centerX, centerY, width, height});
-            this.centerAdded.next(data);
+            this.ideaMetadataUpdated.next(data);
         }
 
         if(this.idea.isEditing === true) {
@@ -63,7 +63,7 @@ export class IdeaComponent implements AfterViewInit, OnInit {
             e.preventDefault();
             let text = (<HTMLParagraphElement>e.target).innerText;
             let idea = Object.assign({}, this.idea, {text: text, isEditing: false});
-            this.ideaUpdated.next(idea);
+            this.ideaContentUpdated.next(idea);
         }
     }
 
@@ -77,20 +77,14 @@ export class IdeaComponent implements AfterViewInit, OnInit {
         this.showColor = !this.showColor;
     }
 
-    onToggleHistory(e: MouseEvent) {
-        this.stopPropagationPlease(e);
-        this.showHistory = !this.showHistory;
-    }
-
     onToggleEdit(e: MouseEvent) {
         this.stopPropagationPlease(e);
         let idea = Object.assign({}, this.idea, {isEditing: !this.idea.isEditing});
-        this.ideaUpdated.next(idea);
+        this.ideaMetadataUpdated.next(idea);
     }
 
     onDelete(e: MouseEvent) {
         this.stopPropagationPlease(e);
-        console.log("delete");
         this.ideaDeleted.next(this.idea);
     }
 
@@ -102,7 +96,7 @@ export class IdeaComponent implements AfterViewInit, OnInit {
     onSaveNote(e: MouseEvent, note: string) {
         this.stopPropagationPlease(e);
         let idea = Object.assign({}, this.idea, {note});
-        this.ideaUpdated.next(idea);
+        this.ideaContentUpdated.next(idea);
         this.showNote = false;
     }
 
@@ -114,6 +108,6 @@ export class IdeaComponent implements AfterViewInit, OnInit {
     changeColor(e: MouseEvent, color: string) {
         this.stopPropagationPlease(e);
         let idea = Object.assign({}, this.idea, {backgroundColor: color});
-        this.ideaUpdated.next(idea);
+        this.ideaContentUpdated.next(idea);
     }
 }

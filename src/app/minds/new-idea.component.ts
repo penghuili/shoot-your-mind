@@ -36,8 +36,8 @@ export class NewIdeaComponent implements OnInit {
             text: node.innerText,
             left: 0,
             top: 0,
-            centerX: this.er.nativeElement.offsetWidth,
-            centerY: this.er.nativeElement.offsetHeight
+            width: this.er.nativeElement.offsetWidth,
+            height: this.er.nativeElement.offsetHeight
         }
         this.newIdea.next(newIdea);
         node.innerText = "New Idea";

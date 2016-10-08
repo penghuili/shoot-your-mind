@@ -1,6 +1,7 @@
 import { 
     Component,
-    OnInit } from '@angular/core';
+    OnInit,
+    OnDestroy } from '@angular/core';
 import { 
     FormControl, 
     FormGroup,
@@ -19,7 +20,7 @@ import { INIT_MIND } from '../shared/init-data';
     templateUrl: "./minds-list.component.html",
     styleUrls: ["./minds-list.component.css"]
 })
-export class MindsListComponent implements OnInit {
+export class MindsListComponent implements OnInit, OnDestroy {
     minds: Observable<Mind[]>;
     mindsSub: any;
     activeMinds: Mind[];
@@ -64,6 +65,10 @@ export class MindsListComponent implements OnInit {
             this.noDeletedMinds = this.deletedMinds.length === 0;
         });
         this.ideasLinesService.loadMinds();
+    }
+
+    ngOnDestroy() {
+        this.mindsSub.unsubscribe();
     }
 
     onShowActive(e: MouseEvent) {

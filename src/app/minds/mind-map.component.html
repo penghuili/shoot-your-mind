@@ -1,12 +1,13 @@
 <div class="map-wrapper" #mapWrapper
     (mousemove)="onMousemoveOnContainer($event)">
-    <sym-canvas
+    <sym-canvas 
         [lines]="lines"
         [canvasWidth]="canvasWidth"
         [canvasHeight]="canvasHeight"
         [isMindDeleted]="isMindDeleted"
         (mousedown)="onMousedownOnCanvas($event)"
-        (mouseup)="onMouseupOnCanvas($event)">
+        (mouseup)="onMouseupOnCanvas($event)"
+        (canvasOffsetReady)="onCanvasOffsetReady($event)">
     </sym-canvas>
     <sym-idea *ngFor="let idea of ideas" 
         [idea]="idea"
@@ -16,9 +17,9 @@
         (mousedown)="onMousedownOnIdea($event, idea)"
         (mouseup)="onMouseupOnIdea($event, idea)"
         (contextmenu)="onContextmenu($event)"
-        (centerAdded)="onCenterAdded($event)"
-        (ideaUpdated)="onIdeaUpdated($event)"
+        (ideaContentUpdated)="onIdeaContentUpdated($event)"
         (ideaDeleted)="onIdeaDeleted($event)"
+        (ideaMetadataUpdated)="onIdeaMetadataUpdated($event)"
         >        
     </sym-idea>
     <sym-new-idea 

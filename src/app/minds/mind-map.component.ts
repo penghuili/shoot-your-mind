@@ -35,8 +35,8 @@ export class MindMapComponent implements OnInit {
     private isAddingNewLine: boolean = false;
     private isDeletingLine: boolean = false;
 
-    private containerLeft: number;
-    private containerTop: number;
+    private canvasOffsetLeft: number;
+    private canvasOffsetTop: number;
 
     private mousedownOnIdea$: Subject<EventAndIdea> = new Subject();
     private mousemoveOnContainer$: Subject<MouseEvent> = new Subject();
@@ -54,18 +54,15 @@ export class MindMapComponent implements OnInit {
     @Input() ideas: Idea[];
     @Input() lines: Line[];
     @Input() isMindDeleted: boolean;
-    @Output() lineCreated = new EventEmitter<Line>();
+    @Output() lineAdded = new EventEmitter<Line>();
     @Output() lineMoving = new EventEmitter<Line>();
     @Output() movingLineDeleted = new EventEmitter<Line>();
     @Output() linesDeleted = new EventEmitter<Line[]>();
     @Output() ideaMoving = new EventEmitter<Idea>();
-    @Output() ideaUpdated = new EventEmitter<Idea>();
-    @Output() ideaCreated = new EventEmitter<Idea>();
+    @Output() ideaContentUpdated = new EventEmitter<Idea>();
+    @Output() ideaMetadataUpdated = new EventEmitter<Idea>();
+    @Output() ideaAdded = new EventEmitter<Idea>();
     @Output() ideaDeleted = new EventEmitter<Idea>();
-    @Output() ideaSelected = new EventEmitter<Idea>();
-    @Output() centerAdded = new EventEmitter<Idea>();
-
-    constructor() {}
 
     ngOnInit() {
         this.initState();
@@ -88,13 +85,13 @@ export class MindMapComponent implements OnInit {
         this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {              
             if(ei.event.button === 0) {
                 if(this.isMovingIdea) {
-                    this.onIdeaUpdated(ei.idea);
+                    this.onIdeaMetadataUpdated(ei.idea);
                 } else {
                     this.selectIdea();
                 }
             } else if(ei.event.button === 2) {
                 if(this.isAddingNewLine) {
-                    this.createLine(ei);
+                    this.addLine(ei);
                 }
             }
         });
@@ -104,8 +101,8 @@ export class MindMapComponent implements OnInit {
                 {}, 
                 INIT_IDEA, 
                 {
-                    centerX: e.pageX - this.containerLeft,
-                    centerY: e.pageY - this.containerTop
+                    centerX: e.pageX - this.canvasOffsetLeft,
+                    centerY: e.pageY - this.canvasOffsetTop
                 }
             );
         });
@@ -163,27 +160,31 @@ export class MindMapComponent implements OnInit {
     }
 
     onNewIdea(idea: Idea) {
-        let centerX = this.newIdeaPosition.left + idea.centerX / 2;
-        let centerY = this.newIdeaPosition.top + idea.centerY / 2;
+        let centerX = this.newIdeaPosition.left + idea.width / 2;
+        let centerY = this.newIdeaPosition.top + idea.height / 2;
         let newIdea = Object.assign(
             {}, 
             idea, 
             this.newIdeaPosition,
             {centerX: centerX, centerY: centerY}
         );
-        this.ideaCreated.next(newIdea);
+        this.ideaAdded.next(newIdea);
         this.initHelpData();
     }
     onIdeaDeleted(idea: Idea) {
         this.ideaDeleted.next(idea);
         this.initHelpData();
     }
-    onIdeaUpdated(idea: Idea) {
-        this.ideaUpdated.next(idea);
+    onIdeaContentUpdated(idea: Idea) {
+        this.ideaContentUpdated.next(idea);
         this.initHelpData();
     }
-    onCenterAdded(idea: Idea) {
-        this.centerAdded.next(idea);
+    onIdeaMetadataUpdated(idea: Idea) {
+        this.ideaMetadataUpdated.next(idea);
+    }
+    onCanvasOffsetReady(e) {
+        this.canvasOffsetLeft = e.canvasOffsetLeft;
+        this.canvasOffsetTop = e.canvasOffsetTop;
     }
 
     private initState() {
@@ -195,8 +196,6 @@ export class MindMapComponent implements OnInit {
             });
         this.canvasWidth = window.innerWidth * 0.95;
         this.canvasHeight = window.innerHeight * 0.85;
-        this.containerLeft = this.getContainerPosition(this.mapWrapper.nativeElement, "offsetLeft");
-        this.containerTop = this.getContainerPosition(this.mapWrapper.nativeElement, "offsetTop");
     }
 
     private recordMousedownState(ei: EventAndIdea) {
@@ -208,34 +207,34 @@ export class MindMapComponent implements OnInit {
     }
 
     private moveIdea(e: MouseEvent) {
-        let left = this.startIdea.left + e.pageX - this.mousedownPosition.left;
-        let top = this.startIdea.top + e.pageY - this.mousedownPosition.top;
-        let idea = {
-            id: this.startIdea.id,
-            text: this.startIdea.text,
-            left: left, 
-            top: top
-        };
+        let deltaX = e.pageX - this.mousedownPosition.left;
+        let deltaY = e.pageY - this.mousedownPosition.top;
+        let left = this.startIdea.left + deltaX;
+        let top = this.startIdea.top + deltaY;
+        let centerX = this.startIdea.centerX + deltaX;
+        let centerY = this.startIdea.centerY + deltaY;
+        let idea = Object.assign({}, this.startIdea, { left, top, centerX, centerY });
         this.ideaMoving.next(idea);
     }
 
     private createIdea(e: MouseEvent) {
         this.newIdeaPosition = {
-            left: e.pageX - this.containerLeft,
-            top: e.pageY - this.containerTop
+            left: e.pageX - this.canvasOffsetLeft,
+            top: e.pageY - this.canvasOffsetTop
         };
         this.isAddingNewIdea = true;
     }
 
     private selectIdea() {
-        this.ideaSelected.next(this.startIdea);
+        let idea = Object.assign({}, this.startIdea, {isSelected: !this.startIdea.isSelected});
+        this.ideaMetadataUpdated.next(idea);
     }
 
     private drawMovingLine(e: MouseEvent){
         this.stopIdea = Object.assign({}, INIT_IDEA, 
             {
-                centerX: e.pageX - this.containerLeft,
-                centerY: e.pageY - this.containerTop
+                centerX: e.pageX - this.canvasOffsetLeft,
+                centerY: e.pageY - this.canvasOffsetTop
             }
         );
         let line = {
@@ -246,26 +245,26 @@ export class MindMapComponent implements OnInit {
         this.lineMoving.next(line);
     }
 
-
-
-    private createLine(ei: EventAndIdea) {
+    private addLine(ei: EventAndIdea) {
         this.stopIdea = Object.assign({}, ei.idea);
         if(this.stopIdea.id === "createNewLineFailed") {
             this.movingLineDeleted.next(INIT_LINE);
         } else {
             let newLine = {
                 id: "line" + new Date().getTime(),
+                ideaAId: this.startIdea.id,
+                ideaBId: this.stopIdea.id,
                 ideaA: Object.assign({}, this.startIdea),
                 ideaB: Object.assign({}, this.stopIdea)
             };
             let isRepeated = this.lines.filter(line => {
-                return (line.ideaA.id === newLine.ideaA.id && line.ideaB.id === newLine.ideaB.id) || 
-                    (line.ideaA.id === newLine.ideaB.id && line.ideaB.id === newLine.ideaA.id);
+                return (line.ideaA.id === this.startIdea.id && line.ideaB.id === this.stopIdea.id) || 
+                    (line.ideaA.id === this.stopIdea.id && line.ideaB.id === this.startIdea.id);
             }).length > 0;
             if(isRepeated) {
                 this.movingLineDeleted.next(INIT_LINE);
             } else {
-                this.lineCreated.next(newLine);
+                this.lineAdded.next(newLine);
             }
         }
         this.initHelpData();
@@ -326,16 +325,5 @@ export class MindMapComponent implements OnInit {
         this.isMovingIdea = false;
         this.isAddingNewLine = false;
         this.isDeletingLine = false;
-    }
-
-    private getContainerPosition(node: any, direction: string, isFirstTime = true) {
-        if(!node.offsetParent) {
-            if(isFirstTime) {
-                return node[direction]
-            } else {
-                return 0;
-            }
-        }
-        return node[direction] + this.getContainerPosition(node.offsetParent, direction, false);
     }
 }

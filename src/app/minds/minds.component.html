@@ -1,16 +1,14 @@
-
-        <sym-mind-map
-            [ideas]="ideas | async"
-            [lines]="lines | async"
-            [isMindDeleted]="isMindDeleted"
-            (lineMoving)="onLineMoving($event)"
-            (movingLineDeleted)="onMovingLineDeleted($event)"
-            (lineCreated)="onLineCreated($event)"
-            (linesDeleted)="onLinesDeleted($event)"
-            (ideaMoving)="onIdeaMoving($event)"
-            (ideaUpdated)="onIdeaUpdated($event)"
-            (ideaCreated)="onIdeaCreated($event)"
-            (ideaDeleted)="onIdeaDeleted($event)"
-            (ideaSelected)="onIdeaSelected($event)"
-            (centerAdded)="onCenterAdded($event)">
-        </sym-mind-map>
+<sym-mind-map
+    [ideas]="ideas | async"
+    [lines]="lines | async"
+    [isMindDeleted]="isMindDeleted"
+    (lineMoving)="onLineMoving($event)"
+    (movingLineDeleted)="onMovingLineDeleted($event)"
+    (lineAdded)="onLineAdded($event)"
+    (linesDeleted)="onLinesDeleted($event)"
+    (ideaMoving)="onIdeaMoving($event)"
+    (ideaAdded)="onIdeaAdded($event)"
+    (ideaDeleted)="onIdeaDeleted($event)"
+    (ideaContentUpdated)="onIdeaContentUpdated($event)"
+    (ideaMetadataUpdated)="onIdeaMetadataUpdated($event)">
+</sym-mind-map>

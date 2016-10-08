@@ -8,21 +8,19 @@ import { Component } from '@angular/core';
 export class HomeComponent {
     onSet() {
         let minds = JSON.parse(localStorage.getItem("sym-minds"));
-        let newMinds = {};
-        minds = minds.map(m => {
-            let newIdeas = {};
-            let newLines = {};
-            m.ideas.forEach(i => {
-                newIdeas[i.id] = {history: [i], deleted: false};
-            });
-            m.lines.forEach(l => {
-                newLines[l.id] = {history: [l], deleted: false, ideaAId: l.ideaA.id, ideaBId: l.ideaB.id};
-            });
-            return Object.assign({}, m, {ideas: newIdeas, lines: newLines});
+        let mind = minds["mind1"];
+        let lines = mind.lines;
+        let linesKeys = Object.keys(lines);
+        let newLines = {};
+        linesKeys.forEach(k => {
+            let ll = lines[k].history[0];
+            newLines[k] = {
+                line: {id: ll.id, ideaAId: ll.ideaAId, ideaBId: ll.ideaBId, deleted: ll.deleted},
+                deleted: ll.deleted
+            };
         });
-        minds.forEach(m => {
-            newMinds[m.id] = m;
-        });
-        localStorage.setItem("sym-minds", JSON.stringify(newMinds));
+        mind.lines = newLines;
+        minds["mind1"] = mind;
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 }

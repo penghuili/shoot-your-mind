@@ -25,31 +25,10 @@ export const DELETE_LINES = "DELETE_LINES";
 export const SELECT_IDEA = "SELECT_IDEA";
 
 export interface AppStore {
-    ideas: {string: Idea};
-    lines: {string: Line};
-    minds: {string: Mind};
+    ideas: Idea[];
+    lines: Line[];
+    minds: Mind[];
 }
-
-export const initialIdeas: Idea[] = [
-    {
-        id: "skjfhiuewieriueriy8743",
-        text: "PWA",
-        left: 40,
-        top: 39
-    },
-    {
-        id: "ieu9er7tdjlkfg",
-        text: "Component",
-        left: 120,
-        top: 46
-    },
-    {
-        id: "slauefyew78e478sdfn",
-        text: "ngrx",
-        left: 20,
-        top: 150
-    }
-];
 
 export const mindsReducer: ActionReducer<Mind[]> = (state: Mind[] = [], action: Action) => {
     switch(action.type) {
@@ -88,7 +67,7 @@ export const mindsReducer: ActionReducer<Mind[]> = (state: Mind[] = [], action: 
 
 
 export const ideasReducer: ActionReducer<Idea[]> = 
-    (state: Idea[] = initialIdeas, action: Action) => {
+    (state: Idea[] = [], action: Action) => {
         switch(action.type) {
             case LOAD_IDEAS:
                 return action.payload;
@@ -130,15 +109,13 @@ export const linesReducer: ActionReducer<Line[]> = (state: Line[] = [], action: 
         case UPDATE_LINES:
             return state.map(line => {
                 if(line.ideaA.id === action.payload.id) {
-                    return {
-                        ideaA: Object.assign({}, action.payload),
-                        ideaB: Object.assign({}, line.ideaB)
-                    }
+                    return Object.assign({}, line, {
+                        ideaA: Object.assign({}, action.payload)
+                    });
                 } else if(line.ideaB.id === action.payload.id) {
-                    return {
-                        ideaA: Object.assign({}, line.ideaA),
+                    return Object.assign({}, line, {
                         ideaB: Object.assign({}, action.payload)
-                    }
+                    });
                 } else {
                     return line;
                 }

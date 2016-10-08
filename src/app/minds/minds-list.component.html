@@ -2,7 +2,7 @@
   <div class="row">
     <div class="btns">
       <button type="button" class="btn btn-danger btn-sm"
-          *ngIf="showDeleted"
+          *ngIf="showDeleted && !noDeletedMinds"
           (click)="onClearTrash($event)">Clear Trash</button>
       <button type="button" class="btn btn-primary btn-sm"
           (click)="onShowAddNew($event)">New Mind</button>

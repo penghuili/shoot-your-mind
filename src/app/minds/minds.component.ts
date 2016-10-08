@@ -21,13 +21,9 @@ export class MindsComponent implements OnInit, OnDestroy {
     ideas: Observable<Idea[]>;
     lines: Observable<Line[]>;
     isMindDeleted: boolean;
-    linesWithIdea: Line[];
 
     private routeSub: any;
-    private linesSub: any;
-    private ideasSub: any;
     private mindId: string;
-    private linesWithoutIdea: Line[];
 
     constructor(
         private ideasLinesService: IdeasLinesService,
@@ -41,14 +37,6 @@ export class MindsComponent implements OnInit, OnDestroy {
         });
         this.ideas = this.store.select("ideas");
         this.lines = this.store.select("lines");
-        this.linesSub = this.lines.subscribe(ls => {
-            this.linesWithoutIdea = ls;
-        });
-        this.ideasSub = this.ideas.subscribe(is => {
-            this.linesWithIdea = this.linesWithoutIdea.map(l => {
-                
-            });
-        });
         this.isMindDeleted = this.ideasLinesService.loadIdeasAndLines(this.mindId);
     }
 
@@ -56,7 +44,8 @@ export class MindsComponent implements OnInit, OnDestroy {
         this.routeSub.unsubscribe();
     }
 
-    onLineCreated(line: Line) {
+
+    onLineAdded(line: Line) {
         this.ideasLinesService.addLine(line, this.mindId);
     }
 
@@ -76,23 +65,19 @@ export class MindsComponent implements OnInit, OnDestroy {
         this.ideasLinesService.moveIdea(idea);
     }
 
-    onIdeaUpdated(idea: Idea) {
-        this.ideasLinesService.updateIdea(idea, this.mindId);
+    onIdeaContentUpdated(idea: Idea) {
+        this.ideasLinesService.addUpdatedIdeaToHistory(idea, this.mindId);
     } 
 
     onIdeaDeleted(idea: Idea) {
         this.ideasLinesService.deleteIdea(idea, this.mindId);
     }
 
-    onIdeaCreated(idea: Idea) {
+    onIdeaAdded(idea: Idea) {
         this.ideasLinesService.addIdea(idea, this.mindId);
     }
 
-    onIdeaSelected(idea: Idea) {
-        this.ideasLinesService.selectIdea(idea, this.mindId);
-    }
-
-    onCenterAdded(idea: Idea) {
-        this.ideasLinesService.addIdeaCenter(idea);
+    onIdeaMetadataUpdated(idea: Idea) {
+        this.ideasLinesService.updateTheLatestIdeaInHistory(idea, this.mindId);
     }
 }
