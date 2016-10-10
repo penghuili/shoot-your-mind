@@ -21,9 +21,12 @@ export class MindsComponent implements OnInit, OnDestroy {
     ideas: Observable<Idea[]>;
     lines: Observable<Line[]>;
     selectedIdeaHistory: Observable<Idea[]>;
+    activeIdeas: Idea[];
+    deletedIdeas: Idea[];
     isMindDeleted: boolean;
 
     private routeSub: any;
+    private ideasSub: any;
     private mindId: string;
 
     constructor(
@@ -40,10 +43,19 @@ export class MindsComponent implements OnInit, OnDestroy {
         this.lines = this.store.select("lines");
         this.selectedIdeaHistory = this.store.select("selectedIdeaHistory");
         this.isMindDeleted = this.ideasLinesService.loadIdeasAndLines(this.mindId);
+        this.ideasSub = this.ideas.subscribe(ideas => {
+            this.activeIdeas = ideas.filter(idea => {
+                return !idea.isDeleted;
+            });
+            this.deletedIdeas = ideas.filter(idea => {
+                return idea.isDeleted;
+            });
+        });
     }
 
     ngOnDestroy() {
         this.routeSub.unsubscribe();
+        this.ideasSub.unsubscribe();
     }
 
 
@@ -83,15 +95,27 @@ export class MindsComponent implements OnInit, OnDestroy {
         this.ideasLinesService.updateTheLatestIdeaInHistory(idea, this.mindId);
     }
 
+    onIdeaSelected(idea: Idea) {
+        this.ideasLinesService.selectIdea(idea, this.mindId);
+    }
+
     onShowHistory(idea: Idea) {
         this.ideasLinesService.loadSelectedIdeaHistory(idea, this.mindId);
     }
 
-    onIdeaRecover(data) {
-        this.ideasLinesService.recoverIdeaFromHistory(data, this.mindId);
+    onHistoryIdeaRecover(data) {
+        this.ideasLinesService.recoverHistoryIdea(data, this.mindId);
     }
 
-    onIdeaDeletedFromHistory(idea: Idea) {
-        this.ideasLinesService.deleteOneIdeaInHistory(idea, this.mindId);
+    onHistoryIdeaDelete(idea: Idea) {
+        this.ideasLinesService.deleteHistoryIdea(idea, this.mindId);
+    }
+
+    onDeletedIdeaRecover(idea: Idea) {
+        this.ideasLinesService.recoverDeletedIdea(idea, this.mindId);
+    }
+
+    onDeletedIdeaDelete(idea: Idea) {
+        this.ideasLinesService.deleteDeletedIdea(idea, this.mindId);
     }
 }

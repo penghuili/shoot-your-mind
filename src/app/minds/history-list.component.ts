@@ -14,20 +14,45 @@ import { Idea } from  '../shared/idea';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HistoryListComponent {
-  @Input() ideas: Idea[];
-  @Input() listHeight: number;
-  @Output() ideaRecover = new EventEmitter();
-  @Output() ideaDeletedFromHistory = new EventEmitter<Idea>();
-  hasHistory: boolean;
-  emptyMessage = {
-    text: "No history.",
-    backgroundColor: "white"
-  };
-
-  onIdeaRecover(idea: Idea) {
-    this.ideaRecover.next(idea);
+  @Input() set historyIdeas(value: Idea[]) {
+    this._historyIdeas = value;
+    this.hasHistory = value.length > 0;
   }
-  onIdeaDeletedFromHistory(idea: Idea) {
-    this.ideaDeletedFromHistory.next(idea);
+  @Input() deletedIdeas: Idea[];
+  @Input() listHeight: number;
+  @Output() historyIdeaRecover = new EventEmitter<Idea>();
+  @Output() historyIdeaDelete = new EventEmitter<Idea>();
+  @Output() deletedIdeaRecover = new EventEmitter<Idea>();
+  @Output() deletedIdeaDelete = new EventEmitter<Idea>();
+  _historyIdeas: Idea[];
+  hasHistory: boolean;
+  isShowCurrent: boolean = true;
+  isShowDeleted: boolean = false;
+
+  onHistoryIdeaRecover(idea: Idea) {
+    this.historyIdeaRecover.next(idea);
+  }
+  onHistoryIdeaDelete(idea: Idea) {
+    this.historyIdeaDelete.next(idea);
+  }
+  onDeletedIdeaRecover(idea: Idea) {
+    this.deletedIdeaRecover.next(idea);
+  }
+  onDeletedIdeaDelete(idea: Idea) {
+    this.deletedIdeaDelete.next(idea);
+  }
+
+  stopPropagationPlease(e: MouseEvent) {
+    e.stopPropagation();
+  }
+  onShowCurrent(e: MouseEvent) {
+    this.stopPropagationPlease(e);
+    this.isShowDeleted = false;
+    this.isShowCurrent = true;
+  }
+  onShowDeleted(e: MouseEvent) {
+    this.stopPropagationPlease(e);
+    this.isShowCurrent = false;
+    this.isShowDeleted = true;
   }
 }

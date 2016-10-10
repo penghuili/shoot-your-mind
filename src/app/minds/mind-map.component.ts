@@ -27,12 +27,10 @@ import {
     styleUrls: ["./mind-map.component.css"]
 })
 export class MindMapComponent implements OnInit {
-    @Input() ideas: Idea[];
+    @Input() activeIdeas: Idea[];
+    @Input() deletedIdeas: Idea[];
     @Input() lines: Line[];
-    @Input() set selectedIdeaHistory(value: Idea[]) {
-        this._selectedIdeaHistory = value;
-        this.hasHistory = value.length > 0;
-    }
+    @Input() selectedIdeaHistory: Idea[];
     @Input() isMindDeleted: boolean;
     @Output() lineAdded = new EventEmitter<Line>();
     @Output() lineMoving = new EventEmitter<Line>();
@@ -43,12 +41,13 @@ export class MindMapComponent implements OnInit {
     @Output() ideaMetadataUpdated = new EventEmitter<Idea>();
     @Output() ideaAdded = new EventEmitter<Idea>();
     @Output() ideaDeleted = new EventEmitter<Idea>();
+    @Output() ideaSelected = new EventEmitter<Idea>();
     @Output() showHistory = new EventEmitter<Idea>();
-    @Output() ideaRecover = new EventEmitter();
-    @Output() ideaDeletedFromHistory = new EventEmitter<Idea>();
+    @Output() historyIdeaRecover = new EventEmitter();
+    @Output() historyIdeaDelete = new EventEmitter<Idea>();
+    @Output() deletedIdeaRecover = new EventEmitter<Idea>();
+    @Output() deletedIdeaDelete = new EventEmitter<Idea>();
 
-    _selectedIdeaHistory: Idea[];
-    hasHistory: boolean;
     isAddingNewIdea = false;
     newIdeaPosition: Position;
     isShowHistory: boolean = false;
@@ -97,6 +96,10 @@ export class MindMapComponent implements OnInit {
                 if(this.isMovingIdea) {
                     this.onIdeaMetadataUpdated(ei.idea);
                 } else if(this.isShowHistory) {
+                    if(this.selectedIdea.id !== this.startIdea.id) {
+                        this.isShowHistory = false;
+                        this.initHelpData();
+                    }
                 } else {
                     this.ToggleSelectIdea(this.startIdea, !this.startIdea.isSelected);
                 }
@@ -202,7 +205,7 @@ export class MindMapComponent implements OnInit {
         this.canvasOffsetTop = e.canvasOffsetTop;
     }
     onShowHistory(idea: Idea) {
-        if(this.isShowHistory) {
+        if(this.isShowHistory && idea.id === this.selectedIdea.id) {
             this.isShowHistory = false;
             this.ToggleSelectIdea(idea, false);
             this.initHelpData();
@@ -215,8 +218,8 @@ export class MindMapComponent implements OnInit {
             }
         }
     }
-    onIdeaRecover(recoverIdea: Idea) {
-        let currentIdea = this.ideas.filter(i => {
+    onHistoryIdeaRecover(recoverIdea: Idea) {
+        let currentIdea = this.activeIdeas.filter(i => {
             return i.id === recoverIdea.id;
         })[0];
         let data = {
@@ -228,10 +231,16 @@ export class MindMapComponent implements OnInit {
                 backgroundColor: recoverIdea.backgroundColor
             })
         };
-        this.ideaRecover.next(data);
+        this.historyIdeaRecover.next(data);
     }
-    onIdeaDeletedFromHistory(idea: Idea) {
-        this.ideaDeletedFromHistory.next(idea);
+    onHistoryIdeaDelete(idea: Idea) {
+        this.historyIdeaDelete.next(idea);
+    }
+    onDeletedIdeaRecover(idea: Idea) {
+        this.deletedIdeaRecover.next(idea);
+    }
+    onDeletedIdeaDelete(idea: Idea) {
+        this.deletedIdeaDelete.next(idea);
     }
 
     private initState() {
@@ -275,7 +284,7 @@ export class MindMapComponent implements OnInit {
 
     private ToggleSelectIdea(idea: Idea, isSelected) {
         let selectedIdea = Object.assign({}, idea, {isSelected: isSelected});
-        this.ideaMetadataUpdated.next(selectedIdea);
+        this.ideaSelected.next(selectedIdea);
     }
 
     private drawMovingLine(e: MouseEvent){
@@ -369,6 +378,7 @@ export class MindMapComponent implements OnInit {
         this.mousedownPosition = Object.assign({}, INIT_POSITION);
         this.startIdea = Object.assign({}, INIT_IDEA);
         this.stopIdea = Object.assign({}, INIT_IDEA);
+        this.selectedIdea = Object.assign({}, INIT_IDEA);
         this.newIdeaPosition = Object.assign({}, INIT_POSITION);
         this.isAddingNewIdea = false;
         this.isMovingIdea = false;

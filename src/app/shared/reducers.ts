@@ -16,6 +16,7 @@ export const UPDATE_IDEA = "UPDATE_IDEA";
 export const ADD_IDEA = "ADD_IDEA";
 export const DELETE_IDEA = "DELETE_IDEA";
 export const RECOVER_IDEA = "RECOVER_IDEA";
+export const DELETE_IDEA_FOREVER = "DELETE_IDEA_FOREVER";
 
 export const LOAD_LINES = "LOAD_LINES";
 export const UPDATE_LINES = "UPDATE_LINES";
@@ -88,19 +89,19 @@ export const ideasReducer: ActionReducer<Idea[]> =
                     }
                 });
             case ADD_IDEA:
-                return [...state, action.payload];
+                return [ action.payload, ...state];
             case DELETE_IDEA:
-                return state.filter(idea => {
-                    return idea.id !== action.payload.id;
+                return state.map(idea => {
+                    if(idea.id === action.payload.id) {
+                        return Object.assign({}, idea, {isDeleted: true});
+                    } else {
+                        return idea;
+                    }
                 });
             case SELECT_IDEA:
                 return state.map(idea => {
-                    if(idea.id === action.payload.id) {
-                        if(idea.isSelected) {
-                            return Object.assign({}, idea, {isSelected: false});
-                        } else {
-                            return Object.assign({}, idea, {isSelected: true});
-                        }
+                    if(!idea.isDeleted && idea.id === action.payload.id) {
+                        return Object.assign({}, action.payload); 
                     } else {
                         return Object.assign({}, idea, {isSelected: false});
                     }
@@ -110,6 +111,10 @@ export const ideasReducer: ActionReducer<Idea[]> =
                     return i.id !== action.payload.id;
                 });
                 return [...filtered, action.payload];
+            case DELETE_IDEA_FOREVER:
+                return state.filter(idea => {
+                    return idea.id !== action.payload.id;
+                });
             default:
                 return state;
         }

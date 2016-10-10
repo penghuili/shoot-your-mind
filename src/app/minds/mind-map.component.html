@@ -10,14 +10,17 @@
             (mouseup)="onMouseupOnCanvas($event)"
             (canvasOffsetReady)="onCanvasOffsetReady($event)">
         </sym-canvas>
-        <sym-history-list *ngIf="isShowHistory && hasHistory"
-            [ideas]="_selectedIdeaHistory"
+        <sym-history-list *ngIf="isShowHistory"
+            [historyIdeas]="selectedIdeaHistory"
+            [deletedIdeas]="deletedIdeas"
             [listHeight]="historyListHeight"
-            (ideaRecover)="onIdeaRecover($event)"
-            (ideaDeletedFromHistory)="onIdeaDeletedFromHistory($event)">
+            (historyIdeaRecover)="onHistoryIdeaRecover($event)"
+            (historyIdeaDelete)="onHistoryIdeaDelete($event)"
+            (deletedIdeaRecover)="onDeletedIdeaRecover($event)"
+            (deletedIdeaDelete)="onDeletedIdeaDelete($event)">
         </sym-history-list>
     </div>
-    <sym-idea *ngFor="let idea of ideas" 
+    <sym-idea *ngFor="let idea of activeIdeas" 
         [idea]="idea"
         [style.top.px]="idea.top"
         [style.left.px]="idea.left"

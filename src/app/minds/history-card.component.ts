@@ -14,7 +14,7 @@ import { Idea } from '../shared/idea';
 export class HistoryCardComponent {
   @Input() idea: Idea;
   @Output() ideaRecover = new EventEmitter<Idea>();
-  @Output() ideaDeletedFromHistory = new EventEmitter<Idea>();
+  @Output() ideaDelete = new EventEmitter<Idea>();
 
   recoverIdea(e: MouseEvent) {
     this.stopPropagationPlease(e);
@@ -22,7 +22,7 @@ export class HistoryCardComponent {
   }
   deleteIdeaFromHistory(e: MouseEvent) {
     this.stopPropagationPlease(e);
-    this.ideaDeletedFromHistory.next(this.idea);
+    this.ideaDelete.next(this.idea);
   }
   stopPropagationPlease(e: MouseEvent) {
       // e.preventDefault();

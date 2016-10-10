@@ -12,4 +12,5 @@ export class Idea {
     isSelected?: boolean;
     backgroundColor?: string;
     historyId?: string;
+    isDeleted?: boolean;
 }

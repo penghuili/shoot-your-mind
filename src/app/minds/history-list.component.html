@@ -1,19 +1,33 @@
 <div class="history-list-wrapper">
   <ul class="nav nav-tabs">
       <li class="nav-item">
-        <a class="nav-link active">Current</a>
+        <a class="nav-link" [class.active]="isShowCurrent"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onShowCurrent($event)">Current</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link">Trash</a>
+        <a class="nav-link" [class.active]="isShowDeleted"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onShowDeleted($event)">Trash</a>
       </li>
     </ul>
 
     <div class="tab-content" [style.height.px]="listHeight">
-      <div class="tab-pane active" role="tabpanel">        
-        <sym-history-card *ngFor="let idea of ideas"
+      <div class="tab-pane" role="tabpanel" [class.active]="isShowCurrent">        
+        <sym-history-card *ngFor="let idea of _historyIdeas"
             [idea]="idea"
-            (ideaRecover)="onIdeaRecover($event)"
-            (ideaDeletedFromHistory)="onIdeaDeletedFromHistory($event)">
+            (ideaRecover)="onHistoryIdeaRecover($event)"
+            (ideaDelete)="onHistoryIdeaDelete($event)">
+        </sym-history-card>
+        <div class="text-sm-center" *ngIf="!hasHistory">
+          <p>No history.</p>
+        </div>
+      </div>
+      <div class="tab-pane" role="tabpanel" [class.active]="isShowDeleted">        
+        <sym-history-card *ngFor="let idea of deletedIdeas"
+            [idea]="idea"
+            (ideaRecover)="onDeletedIdeaRecover($event)"
+            (ideaDelete)="onDeletedIdeaDelete($event)">
         </sym-history-card>
       </div>
     </div>
