@@ -1,6 +1,7 @@
 <sym-mind-map
     [ideas]="ideas | async"
     [lines]="lines | async"
+    [selectedIdeaHistory]="selectedIdeaHistory | async"
     [isMindDeleted]="isMindDeleted"
     (lineMoving)="onLineMoving($event)"
     (movingLineDeleted)="onMovingLineDeleted($event)"
@@ -10,5 +11,8 @@
     (ideaAdded)="onIdeaAdded($event)"
     (ideaDeleted)="onIdeaDeleted($event)"
     (ideaContentUpdated)="onIdeaContentUpdated($event)"
-    (ideaMetadataUpdated)="onIdeaMetadataUpdated($event)">
+    (ideaMetadataUpdated)="onIdeaMetadataUpdated($event)"
+    (showHistory)="onShowHistory($event)"
+    (ideaRecover)="onIdeaRecover($event)"
+    (ideaDeletedFromHistory)="onIdeaDeletedFromHistory($event)">
 </sym-mind-map>

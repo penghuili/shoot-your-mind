@@ -11,7 +11,8 @@ import { routes } from './routes';
 import { 
   ideasReducer, 
   linesReducer,
-  mindsReducer
+  mindsReducer,
+  selectedIdeaHistoryReducer
 } from './shared/reducers';
 import { IdeasLinesService } from './shared/ideas-lines.service';
 
@@ -24,6 +25,8 @@ import { IdeaComponent } from './minds/idea.component';
 import { NewIdeaComponent } from './minds/new-idea.component';
 import { CanvasComponent } from './minds/canvas.component';
 import { SymFooterComponent } from './shared/sym-footer/sym-footer.component';
+import { HistoryCardComponent } from './minds/history-card.component';
+import { HistoryListComponent } from './minds/history-list.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +38,9 @@ import { SymFooterComponent } from './shared/sym-footer/sym-footer.component';
     IdeaComponent,
     NewIdeaComponent,
     CanvasComponent,
-    SymFooterComponent
+    SymFooterComponent,
+    HistoryCardComponent,
+    HistoryListComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +51,8 @@ import { SymFooterComponent } from './shared/sym-footer/sym-footer.component';
     StoreModule.provideStore({
       ideas: ideasReducer, 
       lines: linesReducer,
-      minds: mindsReducer
+      minds: mindsReducer,
+      selectedIdeaHistory: selectedIdeaHistoryReducer
     })
   ],
   providers: [

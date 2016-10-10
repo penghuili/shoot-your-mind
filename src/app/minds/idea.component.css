@@ -1,16 +1,6 @@
-:host {
-    position: absolute;
+.idea-card-wrapper {
     cursor: default;
-}
-
-.card {
-    border-radius: 0;
-    margin: 0;
-    padding: 0.5rem;
-}
-
-.card-block {
-    padding: 0;  
+    width: 7rem;
 }
 
 p {

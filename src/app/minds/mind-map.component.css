@@ -7,3 +7,17 @@
 .borderBlue {
     border: blue solid 1px;
 }
+
+sym-history-list {
+    position: absolute;
+    top: 1rem;
+    right: 3rem;
+}
+
+sym-idea {
+    position: absolute;
+}
+
+.canvas-history-wrapper {
+    position: relative;
+}

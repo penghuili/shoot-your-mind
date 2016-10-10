@@ -1,0 +1,16 @@
+.history-card-wrapper {
+    width: 10rem;
+    margin-bottom: 0.3rem;
+}
+
+p {
+    margin: 0;
+}
+
+hr {
+    margin: 0;
+}
+
+span {
+    font-size: 0.8rem;
+}

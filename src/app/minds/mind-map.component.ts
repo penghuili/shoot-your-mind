@@ -27,9 +27,39 @@ import {
     styleUrls: ["./mind-map.component.css"]
 })
 export class MindMapComponent implements OnInit {
+    @Input() ideas: Idea[];
+    @Input() lines: Line[];
+    @Input() set selectedIdeaHistory(value: Idea[]) {
+        this._selectedIdeaHistory = value;
+        this.hasHistory = value.length > 0;
+    }
+    @Input() isMindDeleted: boolean;
+    @Output() lineAdded = new EventEmitter<Line>();
+    @Output() lineMoving = new EventEmitter<Line>();
+    @Output() movingLineDeleted = new EventEmitter<Line>();
+    @Output() linesDeleted = new EventEmitter<Line[]>();
+    @Output() ideaMoving = new EventEmitter<Idea>();
+    @Output() ideaContentUpdated = new EventEmitter();
+    @Output() ideaMetadataUpdated = new EventEmitter<Idea>();
+    @Output() ideaAdded = new EventEmitter<Idea>();
+    @Output() ideaDeleted = new EventEmitter<Idea>();
+    @Output() showHistory = new EventEmitter<Idea>();
+    @Output() ideaRecover = new EventEmitter();
+    @Output() ideaDeletedFromHistory = new EventEmitter<Idea>();
+
+    _selectedIdeaHistory: Idea[];
+    hasHistory: boolean;
+    isAddingNewIdea = false;
+    newIdeaPosition: Position;
+    isShowHistory: boolean = false;
+    canvasWidth: number;
+    canvasHeight: number;
+    historyListHeight: number;
+
     private mousedownPosition: Position;
     private startIdea: Idea;
     private stopIdea: Idea;
+    private selectedIdea: Idea;
 
     private isMovingIdea: boolean = false;
     private isAddingNewLine: boolean = false;
@@ -43,26 +73,6 @@ export class MindMapComponent implements OnInit {
     private mouseupOnIdea$: Subject<EventAndIdea> = new Subject();
     private mousedownOnCanvas$: Subject<MouseEvent> = new Subject();
     private mouseupOnCanvas$: Subject<MouseEvent> = new Subject();
-
-    isAddingNewIdea = false;
-    newIdeaPosition: Position;
-
-    @ViewChild("mapWrapper") mapWrapper: ElementRef;
-    canvasWidth: number;
-    canvasHeight: number;
-
-    @Input() ideas: Idea[];
-    @Input() lines: Line[];
-    @Input() isMindDeleted: boolean;
-    @Output() lineAdded = new EventEmitter<Line>();
-    @Output() lineMoving = new EventEmitter<Line>();
-    @Output() movingLineDeleted = new EventEmitter<Line>();
-    @Output() linesDeleted = new EventEmitter<Line[]>();
-    @Output() ideaMoving = new EventEmitter<Idea>();
-    @Output() ideaContentUpdated = new EventEmitter<Idea>();
-    @Output() ideaMetadataUpdated = new EventEmitter<Idea>();
-    @Output() ideaAdded = new EventEmitter<Idea>();
-    @Output() ideaDeleted = new EventEmitter<Idea>();
 
     ngOnInit() {
         this.initState();
@@ -86,8 +96,9 @@ export class MindMapComponent implements OnInit {
             if(ei.event.button === 0) {
                 if(this.isMovingIdea) {
                     this.onIdeaMetadataUpdated(ei.idea);
+                } else if(this.isShowHistory) {
                 } else {
-                    this.selectIdea();
+                    this.ToggleSelectIdea(this.startIdea, !this.startIdea.isSelected);
                 }
             } else if(ei.event.button === 2) {
                 if(this.isAddingNewLine) {
@@ -120,6 +131,10 @@ export class MindMapComponent implements OnInit {
                     this.deleteLine();
                 } else if(this.isAddingNewIdea) {
                     this.isAddingNewIdea = false;
+                } else if(this.isShowHistory) {
+                    this.ToggleSelectIdea(this.selectedIdea, false);
+                    this.isShowHistory = false;
+                    this.initHelpData();
                 } else {
                     this.createIdea(e);
                 }
@@ -175,8 +190,8 @@ export class MindMapComponent implements OnInit {
         this.ideaDeleted.next(idea);
         this.initHelpData();
     }
-    onIdeaContentUpdated(idea: Idea) {
-        this.ideaContentUpdated.next(idea);
+    onIdeaContentUpdated(data) {
+        this.ideaContentUpdated.next(data);
         this.initHelpData();
     }
     onIdeaMetadataUpdated(idea: Idea) {
@@ -185,6 +200,38 @@ export class MindMapComponent implements OnInit {
     onCanvasOffsetReady(e) {
         this.canvasOffsetLeft = e.canvasOffsetLeft;
         this.canvasOffsetTop = e.canvasOffsetTop;
+    }
+    onShowHistory(idea: Idea) {
+        if(this.isShowHistory) {
+            this.isShowHistory = false;
+            this.ToggleSelectIdea(idea, false);
+            this.initHelpData();
+        } else {
+            this.showHistory.next(idea);
+            this.isShowHistory = true;
+            this.selectedIdea = Object.assign({}, idea);
+            if(!this.selectedIdea.isSelected) {
+                this.ToggleSelectIdea(idea, true);
+            }
+        }
+    }
+    onIdeaRecover(recoverIdea: Idea) {
+        let currentIdea = this.ideas.filter(i => {
+            return i.id === recoverIdea.id;
+        })[0];
+        let data = {
+            currentIdea: Object.assign({}, currentIdea),
+            recoverIdea: Object.assign({}, currentIdea, {
+                historyId: recoverIdea.historyId,
+                text: recoverIdea.text,
+                note: recoverIdea.note,
+                backgroundColor: recoverIdea.backgroundColor
+            })
+        };
+        this.ideaRecover.next(data);
+    }
+    onIdeaDeletedFromHistory(idea: Idea) {
+        this.ideaDeletedFromHistory.next(idea);
     }
 
     private initState() {
@@ -196,6 +243,7 @@ export class MindMapComponent implements OnInit {
             });
         this.canvasWidth = window.innerWidth * 0.95;
         this.canvasHeight = window.innerHeight * 0.85;
+        this.historyListHeight = this.canvasHeight * 0.86;
     }
 
     private recordMousedownState(ei: EventAndIdea) {
@@ -225,9 +273,9 @@ export class MindMapComponent implements OnInit {
         this.isAddingNewIdea = true;
     }
 
-    private selectIdea() {
-        let idea = Object.assign({}, this.startIdea, {isSelected: !this.startIdea.isSelected});
-        this.ideaMetadataUpdated.next(idea);
+    private ToggleSelectIdea(idea: Idea, isSelected) {
+        let selectedIdea = Object.assign({}, idea, {isSelected: isSelected});
+        this.ideaMetadataUpdated.next(selectedIdea);
     }
 
     private drawMovingLine(e: MouseEvent){
@@ -247,7 +295,8 @@ export class MindMapComponent implements OnInit {
 
     private addLine(ei: EventAndIdea) {
         this.stopIdea = Object.assign({}, ei.idea);
-        if(this.stopIdea.id === "createNewLineFailed") {
+        if(this.stopIdea.id === "createNewLineFailed" || 
+            this.startIdea.id === this.stopIdea.id) {
             this.movingLineDeleted.next(INIT_LINE);
         } else {
             let newLine = {

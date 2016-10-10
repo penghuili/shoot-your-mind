@@ -11,4 +11,5 @@ export class Idea {
     isEditing?: boolean;
     isSelected?: boolean;
     backgroundColor?: string;
+    historyId?: string;
 }

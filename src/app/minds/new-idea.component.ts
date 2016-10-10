@@ -33,11 +33,14 @@ export class NewIdeaComponent implements OnInit {
         let node = <HTMLParagraphElement>e.target;
         let newIdea = {
             id: "idea" + new Date().getTime(),
+            historyId: "idea-history" + new Date().getTime(),
             text: node.innerText,
+            note: "",
             left: 0,
             top: 0,
             width: this.er.nativeElement.offsetWidth,
-            height: this.er.nativeElement.offsetHeight
+            height: this.er.nativeElement.offsetHeight,
+            backgroundColor: "white"
         }
         this.newIdea.next(newIdea);
         node.innerText = "New Idea";

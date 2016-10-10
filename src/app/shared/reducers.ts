@@ -15,6 +15,7 @@ export const LOAD_IDEAS = "LOAD_IDEAS";
 export const UPDATE_IDEA = "UPDATE_IDEA";
 export const ADD_IDEA = "ADD_IDEA";
 export const DELETE_IDEA = "DELETE_IDEA";
+export const RECOVER_IDEA = "RECOVER_IDEA";
 
 export const LOAD_LINES = "LOAD_LINES";
 export const UPDATE_LINES = "UPDATE_LINES";
@@ -24,10 +25,17 @@ export const DELETE_MOVING_LINE = "DELETE_MOVING_LINE";
 export const DELETE_LINES = "DELETE_LINES";
 export const SELECT_IDEA = "SELECT_IDEA";
 
+export const LOAD_SELECTED_IDEA_HISTORY = "LOAD_SELECTED_IDEA_HISTORY";
+export const ADD_SELECTED_IDEA_HISTORY = "ADD_SELECTED_IDEA_HISTORY";
+export const DELETE_SELECTED_IDEA_HISTORY = "DELETE_HISTORY";
+export const RECOVER_IDEA_IN_HISTORY = "RECOVER_IDEA_IN_HISTORY";
+export const DELETE_ONE_IDEA_IN_HISTORY = "DELETE_ONE_IDEA_IN_HISTORY";
+
 export interface AppStore {
     ideas: Idea[];
     lines: Line[];
     minds: Mind[];
+    selectedIdeaHistory: Idea[];
 }
 
 export const mindsReducer: ActionReducer<Mind[]> = (state: Mind[] = [], action: Action) => {
@@ -97,6 +105,11 @@ export const ideasReducer: ActionReducer<Idea[]> =
                         return Object.assign({}, idea, {isSelected: false});
                     }
                 });
+            case RECOVER_IDEA:
+                let filtered = state.filter(i => {
+                    return i.id !== action.payload.id;
+                });
+                return [...filtered, action.payload];
             default:
                 return state;
         }
@@ -145,4 +158,28 @@ export const linesReducer: ActionReducer<Line[]> = (state: Line[] = [], action: 
             return state;
     }
 }
+
+export const selectedIdeaHistoryReducer: ActionReducer<Idea[]> = 
+    (state: Idea[] = [], action: Action) => {
+        switch(action.type) {
+            case LOAD_SELECTED_IDEA_HISTORY:
+                return action.payload;
+            case ADD_SELECTED_IDEA_HISTORY:
+                return [action.payload, ...state];
+            case DELETE_SELECTED_IDEA_HISTORY:
+                return [];
+            case RECOVER_IDEA_IN_HISTORY:
+                let filtered = state.filter(h => {
+                    return h.historyId !== action.payload.recoverIdea.historyId;
+                });
+                let currentIdea = Object.assign({}, action.payload.currentIdea);
+                return [currentIdea, ...filtered];
+            case DELETE_ONE_IDEA_IN_HISTORY:
+                return state.filter(i => {
+                    return i.historyId !== action.payload.historyId;
+                });
+            default:
+                return state;
+        }
+    }
 

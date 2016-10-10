@@ -1,14 +1,22 @@
 <div class="map-wrapper" #mapWrapper
     (mousemove)="onMousemoveOnContainer($event)">
-    <sym-canvas 
-        [lines]="lines"
-        [canvasWidth]="canvasWidth"
-        [canvasHeight]="canvasHeight"
-        [isMindDeleted]="isMindDeleted"
-        (mousedown)="onMousedownOnCanvas($event)"
-        (mouseup)="onMouseupOnCanvas($event)"
-        (canvasOffsetReady)="onCanvasOffsetReady($event)">
-    </sym-canvas>
+    <div class="canvas-history-wrapper">
+        <sym-canvas 
+            [lines]="lines"
+            [canvasWidth]="canvasWidth"
+            [canvasHeight]="canvasHeight"
+            [isMindDeleted]="isMindDeleted"
+            (mousedown)="onMousedownOnCanvas($event)"
+            (mouseup)="onMouseupOnCanvas($event)"
+            (canvasOffsetReady)="onCanvasOffsetReady($event)">
+        </sym-canvas>
+        <sym-history-list *ngIf="isShowHistory && hasHistory"
+            [ideas]="_selectedIdeaHistory"
+            [listHeight]="historyListHeight"
+            (ideaRecover)="onIdeaRecover($event)"
+            (ideaDeletedFromHistory)="onIdeaDeletedFromHistory($event)">
+        </sym-history-list>
+    </div>
     <sym-idea *ngFor="let idea of ideas" 
         [idea]="idea"
         [style.top.px]="idea.top"
@@ -20,6 +28,7 @@
         (ideaContentUpdated)="onIdeaContentUpdated($event)"
         (ideaDeleted)="onIdeaDeleted($event)"
         (ideaMetadataUpdated)="onIdeaMetadataUpdated($event)"
+        (showHistory)="onShowHistory($event)"
         >        
     </sym-idea>
     <sym-new-idea 

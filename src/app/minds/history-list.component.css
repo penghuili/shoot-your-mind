@@ -1,0 +1,6 @@
+.tab-content {
+    border: #ddd solid 1px;
+    border-top: 0;
+    padding: 0.3rem 0.3rem 0;
+    overflow: auto;
+}

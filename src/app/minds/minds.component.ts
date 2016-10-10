@@ -20,6 +20,7 @@ import { Line } from '../shared/line';
 export class MindsComponent implements OnInit, OnDestroy {
     ideas: Observable<Idea[]>;
     lines: Observable<Line[]>;
+    selectedIdeaHistory: Observable<Idea[]>;
     isMindDeleted: boolean;
 
     private routeSub: any;
@@ -37,6 +38,7 @@ export class MindsComponent implements OnInit, OnDestroy {
         });
         this.ideas = this.store.select("ideas");
         this.lines = this.store.select("lines");
+        this.selectedIdeaHistory = this.store.select("selectedIdeaHistory");
         this.isMindDeleted = this.ideasLinesService.loadIdeasAndLines(this.mindId);
     }
 
@@ -65,8 +67,8 @@ export class MindsComponent implements OnInit, OnDestroy {
         this.ideasLinesService.moveIdea(idea);
     }
 
-    onIdeaContentUpdated(idea: Idea) {
-        this.ideasLinesService.addUpdatedIdeaToHistory(idea, this.mindId);
+    onIdeaContentUpdated(data) {
+        this.ideasLinesService.addUpdatedIdeaToHistory(data, this.mindId);
     } 
 
     onIdeaDeleted(idea: Idea) {
@@ -79,5 +81,17 @@ export class MindsComponent implements OnInit, OnDestroy {
 
     onIdeaMetadataUpdated(idea: Idea) {
         this.ideasLinesService.updateTheLatestIdeaInHistory(idea, this.mindId);
+    }
+
+    onShowHistory(idea: Idea) {
+        this.ideasLinesService.loadSelectedIdeaHistory(idea, this.mindId);
+    }
+
+    onIdeaRecover(data) {
+        this.ideasLinesService.recoverIdeaFromHistory(data, this.mindId);
+    }
+
+    onIdeaDeletedFromHistory(idea: Idea) {
+        this.ideasLinesService.deleteOneIdeaInHistory(idea, this.mindId);
     }
 }

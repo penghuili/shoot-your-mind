@@ -20,13 +20,20 @@ import {
     ADD_IDEA,
     DELETE_IDEA,
     SELECT_IDEA,
+    RECOVER_IDEA,
 
     LOAD_LINES,
     UPDATE_LINES,
     ADD_LINE,
     DELETE_LINES_WHEN_DELETE_IDEA,
     DELETE_MOVING_LINE,
-    DELETE_LINES
+    DELETE_LINES,
+
+    LOAD_SELECTED_IDEA_HISTORY,
+    ADD_SELECTED_IDEA_HISTORY,
+    DELETE_SELECTED_IDEA_HISTORY,
+    RECOVER_IDEA_IN_HISTORY,
+    DELETE_ONE_IDEA_IN_HISTORY
 } from './reducers';
 
 @Injectable()
@@ -108,10 +115,11 @@ export class IdeasLinesService {
         return mind.deleted;
     }
 
-    addUpdatedIdeaToHistory(idea: Idea, mindId: string) {
-        this.addUpdatedIdeaToHistoryInServer(idea, mindId);
-        this.store.dispatch({type: UPDATE_IDEA, payload: idea});
-        this.store.dispatch({type: UPDATE_LINES, payload: idea});
+    addUpdatedIdeaToHistory(data, mindId: string) {
+        this.addUpdatedIdeaToHistoryInServer(data.newIdea, mindId);
+        this.store.dispatch({type: UPDATE_IDEA, payload: data.newIdea});
+        this.store.dispatch({type: UPDATE_LINES, payload: data.newIdea});
+        this.store.dispatch({type: ADD_SELECTED_IDEA_HISTORY, payload: data.oldIdea});
     }
 
     updateTheLatestIdeaInHistory(idea: Idea, mindId: string) {
@@ -130,11 +138,23 @@ export class IdeasLinesService {
         this.deleteLinesWhenDeleteIdeaFromServer(idea, mindId);
         this.store.dispatch({type: DELETE_IDEA, payload: idea});
         this.store.dispatch({type: DELETE_LINES_WHEN_DELETE_IDEA, payload: idea});
+        this.store.dispatch({type: DELETE_SELECTED_IDEA_HISTORY, payload: []});
     }
 
     moveIdea(idea: Idea) {
         this.store.dispatch({type: UPDATE_IDEA, payload: idea});
         this.store.dispatch({type: UPDATE_LINES, payload: idea});
+    }
+
+    recoverIdeaFromHistory(data, mindId: string) {
+        this.recoverIdeaFromHistoryInServer(data, mindId);
+        this.store.dispatch({type: RECOVER_IDEA_IN_HISTORY, payload: data});
+        this.store.dispatch({type: RECOVER_IDEA, payload: data.recoverIdea});
+    }
+
+    deleteOneIdeaInHistory(idea: Idea, mindId: string) {
+        this.deleteOneIdeaInHistoryFromServer(idea, mindId);
+        this.store.dispatch({type: DELETE_ONE_IDEA_IN_HISTORY, payload: idea});
     }
 
     addLine(line: Line, mindId: string) {
@@ -161,6 +181,19 @@ export class IdeasLinesService {
     deleteLines(lines: Line[], mindId: string) {
         this.deleteLinesFromServer(lines, mindId);
         this.store.dispatch({type: DELETE_LINES, payload: lines});
+    }
+
+    loadSelectedIdeaHistory(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let mind = minds[mindId];
+        let selectedIdea = mind.ideas[idea.id];
+        let history = [];
+        if(selectedIdea.deleted) {
+            this.store.dispatch({type: LOAD_SELECTED_IDEA_HISTORY, payload: history});
+        } else {
+            history = selectedIdea.history.slice(1);
+            this.store.dispatch({type: LOAD_SELECTED_IDEA_HISTORY, payload: history});
+        }
     }
 
     private addMindToServer(mind: Mind) {
@@ -200,7 +233,7 @@ export class IdeasLinesService {
 
     private addUpdatedIdeaToHistoryInServer(idea: Idea, mindId: string) {
         let minds = JSON.parse(localStorage.getItem("sym-minds"));
-        minds[mindId].ideas[idea.id].history[0].isEditing = false; 
+        minds[mindId].ideas[idea.id].history[0].isEditing = false;
         minds[mindId].ideas[idea.id].history.unshift(idea);       
         localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
@@ -213,7 +246,9 @@ export class IdeasLinesService {
 
     private addIdeaToServer(idea: Idea, mindId: string) {
         let minds = JSON.parse(localStorage.getItem("sym-minds"));
-        minds[mindId].ideas[idea.id] = {history: [idea], deleted: false};     
+        minds[mindId].ideas[idea.id] = {
+            history: [idea], 
+            deleted: false};     
         localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 
@@ -226,6 +261,28 @@ export class IdeasLinesService {
     private deleteIdeaForeverFromServer(idea: Idea, mindId: string) {
         let minds = JSON.parse(localStorage.getItem("sym-minds"));
         delete minds[mindId].ideas[idea.id];        
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private recoverIdeaFromHistoryInServer(data, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let mind = minds[mindId];
+        let ideaHistory = mind.ideas[data.currentIdea.id].history;
+        let filtered = ideaHistory.filter(i => {
+            return data.recoverIdea.historyId !== i.historyId;
+        });
+        minds[mindId].ideas[data.currentIdea.id].history = [data.recoverIdea, ...filtered]; 
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
+    }
+
+    private deleteOneIdeaInHistoryFromServer(idea: Idea, mindId: string) {
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let mind = minds[mindId];
+        let ideaHistory = mind.ideas[idea.id].history;
+        let filtered = ideaHistory.filter(i => {
+            return idea.historyId !== i.historyId;
+        });
+        minds[mindId].ideas[idea.id].history = filtered;
         localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 

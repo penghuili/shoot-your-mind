@@ -26,10 +26,10 @@ import { Position } from '../shared/position';
 })
 export class IdeaComponent implements AfterViewInit, OnInit {
     @Input() idea: Idea;
-    // @Output() centerAdded = new EventEmitter<Idea>();
-    @Output() ideaContentUpdated = new EventEmitter<Idea>();
+    @Output() ideaContentUpdated = new EventEmitter();
     @Output() ideaDeleted = new EventEmitter<Idea>();
     @Output() ideaMetadataUpdated = new EventEmitter<Idea>();
+    @Output() showHistory = new EventEmitter<Idea>();
     hasNote: boolean = false;
     showNote: boolean = false;
     showColor: boolean = false;
@@ -37,7 +37,7 @@ export class IdeaComponent implements AfterViewInit, OnInit {
     constructor(private er: ElementRef) {}
 
     ngOnInit() {
-        if(this.idea.note && this.idea.note.length > 0) {
+        if(this.idea.note.length > 0) {
             this.hasNote = true;
         }            
     }
@@ -62,23 +62,38 @@ export class IdeaComponent implements AfterViewInit, OnInit {
         if(e.keyCode === 13) {
             e.preventDefault();
             let text = (<HTMLParagraphElement>e.target).innerText;
-            let idea = Object.assign({}, this.idea, {text: text, isEditing: false});
-            this.ideaContentUpdated.next(idea);
+            let idea = Object.assign({}, this.idea, {
+                text: text, 
+                isEditing: false,
+                historyId: "idea-history" + new Date().getTime()
+            });
+            this.ideaContentUpdated.next({oldIdea: this.idea, newIdea: idea});
         }
     }
 
     onToggleNote(e: MouseEvent) {
         this.stopPropagationPlease(e);
+        this.showColor = false;
         this.showNote = !this.showNote;
     }
 
     onToggleColor(e: MouseEvent) {
         this.stopPropagationPlease(e);
+        this.showNote = false;
         this.showColor = !this.showColor;
+    }
+
+    onToggleHistory(e: MouseEvent) {
+        this.stopPropagationPlease(e);
+        this.showColor = false;
+        this.showNote = false;
+        this.showHistory.next(this.idea);
     }
 
     onToggleEdit(e: MouseEvent) {
         this.stopPropagationPlease(e);
+        this.showColor = false;
+        this.showNote = false;
         let idea = Object.assign({}, this.idea, {isEditing: !this.idea.isEditing});
         this.ideaMetadataUpdated.next(idea);
     }
@@ -96,18 +111,24 @@ export class IdeaComponent implements AfterViewInit, OnInit {
     onSaveNote(e: MouseEvent, note: string) {
         this.stopPropagationPlease(e);
         let idea = Object.assign({}, this.idea, {note});
-        this.ideaContentUpdated.next(idea);
+        this.ideaContentUpdated.next({oldIdea: this.idea, newIdea: idea});
         this.showNote = false;
     }
 
     stopPropagationPlease(e: MouseEvent) {
-        e.preventDefault();
+        // e.preventDefault();
         e.stopPropagation();
     }
 
     changeColor(e: MouseEvent, color: string) {
         this.stopPropagationPlease(e);
         let idea = Object.assign({}, this.idea, {backgroundColor: color});
-        this.ideaContentUpdated.next(idea);
+        this.ideaContentUpdated.next({oldIdea: this.idea, newIdea: idea});
+    }
+
+    onText(e: MouseEvent) {
+        if(this.idea.isEditing) {
+            this.stopPropagationPlease(e);
+        }
     }
 }
