@@ -14,10 +14,10 @@ import { Line } from '../shared/line';
 
 @Component({
     selector: "sym-minds",
-    templateUrl: "./minds.component.html",
-    styleUrls: ["./minds.component.css"]
+    templateUrl: "./mind-detail.component.html",
+    styleUrls: ["./mind-detail.component.css"]
 })
-export class MindsComponent implements OnInit, OnDestroy {
+export class MindDetailComponent implements OnInit, OnDestroy {
     ideas: Observable<Idea[]>;
     lines: Observable<Line[]>;
     selectedIdeaHistory: Observable<Idea[]>;

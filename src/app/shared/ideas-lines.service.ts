@@ -36,6 +36,7 @@ import {
     RECOVER_IDEA_IN_HISTORY,
     DELETE_ONE_IDEA_IN_HISTORY
 } from './reducers';
+import { INIT_MINDS } from './init-data';
 
 @Injectable()
 export class IdeasLinesService {
@@ -44,23 +45,22 @@ export class IdeasLinesService {
 
     loadMinds() {
         if(!localStorage.getItem("sym-minds")) {
-            localStorage.setItem("sym-minds", JSON.stringify({}));
-            this.store.dispatch({type: LOAD_MINDS, payload: []});
-        } else {
-            let minds = JSON.parse(localStorage.getItem("sym-minds"));
-            let mindsKeys = Object.keys(minds);
-            let mindsInfo: Mind[] = [];
-            mindsKeys.forEach(k => {
-                let info = {
-                    id: k,
-                    title: minds[k].title,
-                    description: minds[k].description,
-                    deleted: minds[k].deleted
-                };
-                mindsInfo.push(info);
-            });
-            this.store.dispatch({type: LOAD_MINDS, payload: mindsInfo});
+            localStorage.setItem("sym-minds", JSON.stringify(INIT_MINDS));
         }
+        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let mindsKeys = Object.keys(minds);
+        let mindsInfo: Mind[] = [];
+        mindsKeys.forEach(k => {
+            let info = {
+                id: k,
+                title: minds[k].title,
+                description: minds[k].description,
+                deleted: minds[k].deleted
+            };
+            mindsInfo.push(info);
+        });
+        this.store.dispatch({type: LOAD_MINDS, payload: mindsInfo});
+        
     }
 
     addMind(mind: Mind) {

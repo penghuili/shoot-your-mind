@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 import { HomeComponent } from './home/home.component';
-import { MindsComponent } from './minds/minds.component';
+import { MindDetailComponent } from './minds/mind-detail.component';
 import { MindsListComponent } from './minds/minds-list.component';
 
 export const routes: Routes = [
@@ -13,7 +13,7 @@ export const routes: Routes = [
         path: "minds",
         children: [
             {path: "", component: MindsListComponent},
-            {path: ":mindId", component: MindsComponent}
+            {path: ":mindId", component: MindDetailComponent}
         ]
     }
 ];

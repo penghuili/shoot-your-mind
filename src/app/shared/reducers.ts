@@ -45,6 +45,7 @@ export const mindsReducer: ActionReducer<Mind[]> = (state: Mind[] = [], action: 
             return action.payload;
         case ADD_MIND:
             return [action.payload, ...state];
+            // This should be a update
         case DELETE_MIND:
             return state.map(mind => {
                 if(mind.id === action.payload.id) {

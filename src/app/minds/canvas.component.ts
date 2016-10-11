@@ -24,12 +24,11 @@ export class CanvasComponent implements OnChanges, AfterViewInit {
   @Input() isMindDeleted: boolean;
   @Input() lines: Line[];
   @Output() canvasOffsetReady = new EventEmitter();
+  // Use ElementRef and querySelector to get canvas
   @ViewChild("canvas") canvas: ElementRef;
   ctx: CanvasRenderingContext2D;
 
   ngOnChanges() {
-    this.ctx = this.canvas.nativeElement.getContext("2d");
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
     this.drawLines();
   }
 
@@ -38,6 +37,7 @@ export class CanvasComponent implements OnChanges, AfterViewInit {
     let canvasOffsetLeft = this.getContainerPosition(node, "offsetLeft");
     let canvasOffsetTop = this.getContainerPosition(node, "offsetTop");
     this.canvasOffsetReady.next({canvasOffsetLeft, canvasOffsetTop});
+    this.drawLines();
   }
 
   private drawLine(x1: number, y1: number, x2: number, y2:number) {
@@ -48,6 +48,9 @@ export class CanvasComponent implements OnChanges, AfterViewInit {
   }
 
   private drawLines() {
+    this.ctx = this.canvas.nativeElement.getContext("2d");
+    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+
     this.lines.forEach(line => {
       this.drawLine(
         line.ideaA.centerX,

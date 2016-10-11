@@ -40,7 +40,8 @@ export class NewIdeaComponent implements OnInit {
             top: 0,
             width: this.er.nativeElement.offsetWidth,
             height: this.er.nativeElement.offsetHeight,
-            backgroundColor: "white"
+            backgroundColor: "white",
+            isEditing: false
         }
         this.newIdea.next(newIdea);
         node.innerText = "New Idea";

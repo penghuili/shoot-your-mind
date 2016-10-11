@@ -3,7 +3,7 @@
       [style.background-color]="idea.backgroundColor">
     <div class="container">
       <div class="row">
-        <div class="col-sm-9">
+        <div class="col-sm-10">
           <div class="card-block">
             <h6 class="card-title">{{idea.text}}</h6>
           </div>
@@ -12,7 +12,7 @@
             <p class="card-text">{{idea.note}}</p>
           </div>
         </div>
-        <div class="col-sm-3">
+        <div class="col-sm-2">
           <span class="fa fa-undo"
               (mousedown)="stopPropagationPlease($event)"
               (mouseup)="recoverIdea($event)"></span><br>

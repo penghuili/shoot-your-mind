@@ -1,12 +1,12 @@
 import {
     AfterViewInit,
+    ChangeDetectionStrategy,
     Component, 
     ElementRef,
     EventEmitter,
     Input, 
     OnInit, 
-    Output, 
-    ViewChild 
+    Output
 } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
@@ -24,7 +24,8 @@ import {
 @Component({
     selector: "sym-mind-map",
     templateUrl: "./mind-map.component.html",
-    styleUrls: ["./mind-map.component.css"]
+    styleUrls: ["./mind-map.component.css"],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MindMapComponent implements OnInit {
     @Input() activeIdeas: Idea[];
@@ -378,7 +379,6 @@ export class MindMapComponent implements OnInit {
         this.mousedownPosition = Object.assign({}, INIT_POSITION);
         this.startIdea = Object.assign({}, INIT_IDEA);
         this.stopIdea = Object.assign({}, INIT_IDEA);
-        this.selectedIdea = Object.assign({}, INIT_IDEA);
         this.newIdeaPosition = Object.assign({}, INIT_POSITION);
         this.isAddingNewIdea = false;
         this.isMovingIdea = false;
