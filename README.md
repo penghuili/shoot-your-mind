@@ -7,6 +7,6 @@ ngrx
 localStorage
 Bootstrap
 
-website: https://penghuili.github.io/shoot-your-mind/
+website: https://shoot-your-mind.firebaseapp.com/
 
 ![Alt text](/home_page.png?raw=true "Home page")
