@@ -4,6 +4,7 @@ import {
     Component,
     EventEmitter,
     Input, 
+    OnDestroy,
     OnInit, 
     Output
 } from '@angular/core';
@@ -27,7 +28,7 @@ import {
     styleUrls: ["./mind-map.component.css"],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class MindMapComponent implements OnInit {
+export class MindMapComponent implements OnDestroy, OnInit {
     @Input() activeIdeas: Idea[];
     @Input() deletedIdeas: Idea[];
     @Input() lines: Line[];
@@ -73,11 +74,15 @@ export class MindMapComponent implements OnInit {
     private mouseupOnIdea$: Subject<EventAndIdea> = new Subject();
     private mousedownOnCanvas$: Subject<MouseEvent> = new Subject();
     private mouseupOnCanvas$: Subject<MouseEvent> = new Subject();
+    private mousedownOnIdeaSubscription: any;
+    private mouseupOnIdeaSubscription: any;
+    private mousedownOnCanvasSubscription: any;
+    private mouseupOnCanvasSubscription: any;
 
     ngOnInit() {
         this.initState();
 
-        this.mousedownOnIdea$.subscribe((ei: EventAndIdea) => {
+        this.mousedownOnIdeaSubscription =  this.mousedownOnIdea$.subscribe((ei: EventAndIdea) => {
             this.recordMousedownState(ei);
         });
         this.mousedownOnIdea$
@@ -92,7 +97,7 @@ export class MindMapComponent implements OnInit {
                     this.drawMovingLine(e);
                 }   
         });
-        this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {              
+        this.mouseupOnIdeaSubscription =  this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {              
             if(ei.event.button === 0) {
                 if(this.isMovingIdea) {
                     this.onIdeaMetadataUpdated(ei.idea);
@@ -111,7 +116,7 @@ export class MindMapComponent implements OnInit {
             }
         });
 
-        this.mousedownOnCanvas$.subscribe(e => {
+        this.mousedownOnCanvasSubscription =  this.mousedownOnCanvas$.subscribe(e => {
             this.startIdea = Object.assign(
                 {}, 
                 INIT_IDEA, 
@@ -129,7 +134,7 @@ export class MindMapComponent implements OnInit {
                     this.drawMovingLine(e);
                 }
         });
-        this.mouseupOnCanvas$.subscribe(e => {
+        this.mouseupOnCanvasSubscription =  this.mouseupOnCanvas$.subscribe(e => {
             if(e.button === 0) {
                 if(this.isDeletingLine) {
                     this.deleteLine();
@@ -148,6 +153,13 @@ export class MindMapComponent implements OnInit {
                 }
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.mousedownOnIdeaSubscription.unsubscribe();
+        this.mouseupOnIdeaSubscription.unsubscribe();
+        this.mousedownOnCanvasSubscription.unsubscribe();
+        this.mouseupOnCanvasSubscription.unsubscribe();
     }
     
     onMousedownOnIdea(e: MouseEvent, idea: Idea) {

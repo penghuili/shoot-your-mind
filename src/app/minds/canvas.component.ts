@@ -18,7 +18,7 @@ import { Line } from '../shared/line';
   styleUrls: ['./canvas.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CanvasComponent implements OnChanges, AfterViewInit {
+export class CanvasComponent implements AfterViewInit, OnChanges {
   @Input() canvasWidth: number;
   @Input() canvasHeight: number;
   @Input() isMindDeleted: boolean;
@@ -28,15 +28,15 @@ export class CanvasComponent implements OnChanges, AfterViewInit {
   @ViewChild("canvas") canvas: ElementRef;
   ctx: CanvasRenderingContext2D;
 
-  ngOnChanges() {
-    this.drawLines();
-  }
-
   ngAfterViewInit() {
     let node = this.canvas.nativeElement;
     let canvasOffsetLeft = this.getContainerPosition(node, "offsetLeft");
     let canvasOffsetTop = this.getContainerPosition(node, "offsetTop");
     this.canvasOffsetReady.next({canvasOffsetLeft, canvasOffsetTop});
+    this.drawLines();
+  }
+
+  ngOnChanges() {
     this.drawLines();
   }
 

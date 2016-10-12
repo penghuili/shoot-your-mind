@@ -1,3 +1,20 @@
 .jumbotron {
     background-color: yellow;
+    margin: 0;
+    color: black;
+}
+
+.sym-features {
+    background-color: #00ff00;
+}
+
+.list-group-item {
+    background: none;
+    border: 0;
+    color: black;
+}
+
+.ben-card {
+    background: none;
+    border: 0;
 }
