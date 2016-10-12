@@ -1,5 +1,7 @@
 .mind-list-container {
-    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    background-color: yellow;
 }
 
 a {
