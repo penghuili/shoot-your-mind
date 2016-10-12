@@ -47,7 +47,7 @@ export class IdeasLinesService {
         if(!localStorage.getItem("sym-minds")) {
             localStorage.setItem("sym-minds", JSON.stringify(INIT_MINDS));
         }
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let mindsKeys = Object.keys(minds);
         let mindsInfo: Mind[] = [];
         mindsKeys.forEach(k => {
@@ -95,7 +95,7 @@ export class IdeasLinesService {
     }
 
     loadIdeasAndLines(mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let mind = minds[mindId];
         let ideas = mind.ideas;
         let lines = mind.lines;
@@ -205,12 +205,12 @@ export class IdeasLinesService {
     }
 
     deleteLines(lines: Line[], mindId: string) {
-        this.deleteLinesFromServer(lines, mindId);
+        this.deleteLinesForeverFromServer(lines, mindId);
         this.store.dispatch({type: DELETE_LINES, payload: lines});
     }
 
     loadSelectedIdeaHistory(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let mind = minds[mindId];
         let selectedIdea = mind.ideas[idea.id];
         let history = [];
@@ -223,132 +223,117 @@ export class IdeasLinesService {
     }
 
     private addMindToServer(mind: Mind) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         minds[mind.id] = mind;
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private deleteMindFromServer(mind: Mind) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         minds[mind.id].deleted = true;
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private updateMindInServer(mind: Mind) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         minds[mind.id] = Object.assign({}, minds[mind.id], mind);
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private deleteMindForeverFromServer(mind: Mind) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         delete minds[mind.id];
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private clearMindTrashFromServer() {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let keys = Object.keys(minds);
         keys.forEach(k => {
             if(minds[k].deleted) {
                 delete minds[k];
             }
         });
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private addUpdatedIdeaToHistoryInServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         minds[mindId].ideas[idea.id].history[0].isEditing = false;
         minds[mindId].ideas[idea.id].history.unshift(idea);       
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private updateTheLatestIdeaInHistoryInServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         minds[mindId].ideas[idea.id].history[0] = idea;       
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private addIdeaToServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         minds[mindId].ideas[idea.id] = {
             history: [idea], 
             deleted: false};     
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private deleteIdeaFromServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         minds[mindId].ideas[idea.id].deleted = true;        
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private deleteIdeaForeverFromServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         delete minds[mindId].ideas[idea.id];        
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private recoverHistoryIdeaInServer(data, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let mind = minds[mindId];
         let ideaHistory = mind.ideas[data.currentIdea.id].history;
         let filtered = ideaHistory.filter(i => {
             return data.recoverIdea.historyId !== i.historyId;
         });
         minds[mindId].ideas[data.currentIdea.id].history = [data.recoverIdea, ...filtered]; 
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private deleteHistoryIdeaInServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let mind = minds[mindId];
         let ideaHistory = mind.ideas[idea.id].history;
         let filtered = ideaHistory.filter(i => {
             return idea.historyId !== i.historyId;
         });
         minds[mindId].ideas[idea.id].history = filtered;
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private recoverDeletedIdeaInServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let mind = minds[mindId];
         mind.ideas[idea.id].deleted = false;
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private deleteLinesWhenDeleteIdeaFromServer(idea: Idea, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let lines = minds[mindId].lines;
         let linesKeys = Object.keys(lines);
         linesKeys.forEach(k => {
             if(lines[k].line.ideaAId === idea.id || lines[k].line.ideaBId === idea.id) {
-                lines[k].deleted = true;
+                delete lines[k];
             }
         });
         minds[mindId].lines = lines;        
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
-    }
-
-    private deleteLinesFromServer(ls: Line[], mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
-        let lines = minds[mindId].lines;
-        let linesKeys = Object.keys(lines);
-        linesKeys.forEach(k => {
-            ls.forEach(l => {
-                if(l.id === k) {
-                    lines[k].deleted = true;
-                }
-            });
-        });
-        minds[mindId].lines = lines;        
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private deleteLinesForeverFromServer(ls: Line[], mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let lines = minds[mindId].lines;
         let linesKeys = Object.keys(lines);
         linesKeys.forEach(k => {
@@ -359,11 +344,11 @@ export class IdeasLinesService {
             });
         });
         minds[mindId].lines = lines;        
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private addLineToServer(line: Line, mindId: string) {
-        let minds = JSON.parse(localStorage.getItem("sym-minds"));
+        let minds = this.getMinds();
         let lineForServer = {
             id: line.id,
             ideaAId: line.ideaAId,
@@ -373,12 +358,20 @@ export class IdeasLinesService {
             line: lineForServer,
             deleted: false
         };       
-        localStorage.setItem("sym-minds", JSON.stringify(minds));
+        this.setMinds(minds);
     }
 
     private getIdea(ideas: Idea[], id: string) {
         return ideas.filter(i => {
             return i.id === id;
         })[0];
+    }
+
+    private getMinds() {
+        return JSON.parse(localStorage.getItem("sym-minds"));
+    }
+
+    private setMinds(minds) {
+        localStorage.setItem("sym-minds", JSON.stringify(minds));
     }
 }
