@@ -1,0 +1,53 @@
+.mind-list-container {
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    background-color: yellow;
+}
+
+a {
+    cursor: default;
+}
+
+.row {
+    margin-bottom: 0.5rem;
+    position: relative;
+}
+
+.btns {
+    position: absolute;
+    top: 0.1rem;
+    right: 0;
+}
+
+.tab-content {
+    border: #ddd solid 1px;
+    border-top: 0;
+}
+
+.list-group {
+    border-top: none;
+}
+
+.list-group-item {
+    border: none;
+}
+
+.form-container {
+    padding-top: 0.8rem;
+}
+
+input {
+    border-radius: 0;
+}
+
+textarea {
+    border-radius: 0;
+}
+
+.help-text {
+    color: red;
+}
+
+span {
+    margin-left: 0.5rem;
+}

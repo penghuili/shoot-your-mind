@@ -1,0 +1,78 @@
+<div class="idea-card-wrapper">
+    <div class="card text-xs-center"
+        [style.background-color]="idea.backgroundColor">
+    <div class="card-block">
+        <h6 class="card-title" [attr.id]="idea.id"
+            [attr.contenteditable]="idea.isEditing"
+            (mouseup)="onText($event)"
+            (mousedown)="onText($event)"
+            (keydown)="onChangeText($event)">{{idea.text}}</h6>
+    </div>
+    <hr>
+    <div class="card-block">
+        <span class="fa fa-paint-brush"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onToggleColor($event)"></span>
+        <span class="fa fa-sticky-note" *ngIf="hasNote"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onToggleNote($event)"></span>
+        <span class="fa fa-sticky-note-o" *ngIf="!hasNote"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onToggleNote($event)"></span>
+        <span class="fa fa-history"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onToggleHistory($event)"></span>
+        <span class="fa fa-edit"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onToggleEdit($event)"></span>
+        <span class="fa fa-trash-o"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onDelete($event)"></span>
+    </div>
+    </div>
+
+    <div class="card text-xs-center edit" *ngIf="showNote">
+    <div class="card-block">
+        <textarea #textarea autofocus cols="10"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="stopPropagationPlease($event)">{{idea.note}}</textarea>
+        <div class="btn-group btn-group-sm" role="group">
+        <button type="button" class="btn btn-secondary btn-sm"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onCancelNote($event)">Cancel</button>
+        <button type="button" class="btn btn-primary btn-sm"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="onSaveNote($event, textarea.value)">Save</button>
+        </div>
+    </div>
+    </div>
+
+    <div class="card text-xs-center edit" *ngIf="showColor">
+    <div class="card-block">
+        <span class="fa fa-circle-thin white"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, 'white')"></span>
+        <span class="fa fa-circle red" 
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, '#F08080')"></span>
+        <span class="fa fa-circle orange"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, '#F4A460')"></span>
+        <span class="fa fa-circle yellow"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, '#F0E68C')"></span> <br>
+        <span class="fa fa-circle grey"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, '#E6E6FA')"></span>
+        <span class="fa fa-circle blue"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, '#87CEFA')"></span>
+        <span class="fa fa-circle teal"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, '#AFEEEE')"></span>
+        <span class="fa fa-circle green"
+            (mousedown)="stopPropagationPlease($event)"
+            (mouseup)="changeColor($event, '#98FB98')"></span>
+    </div>
+    </div>
+</div>

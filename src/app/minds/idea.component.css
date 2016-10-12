@@ -1,0 +1,59 @@
+.idea-card-wrapper {
+    cursor: default;
+    width: 7rem;
+}
+
+p {
+    margin: 0;
+}
+
+span {
+    font-size: 10px;
+    margin-right: 2px;
+}
+
+hr {
+    margin: 0;
+}
+
+.edit {
+    padding: 0.3rem;
+    position: absolute;
+}
+
+.history {
+    top: 0;
+    right: 0;
+}
+
+.fa-circle.white {
+    color: #E6E6FA;
+}
+
+.fa-circle.red {
+    color: #F08080;
+}
+
+.fa-circle.orange {
+    color: #F4A460;
+}
+
+.fa-circle.yellow {
+    color: #F0E68C;
+}
+
+.fa-circle.grey {
+    color: #E6E6FA;
+}
+
+.fa-circle.blue {
+    color: #87CEFA;
+}
+
+.fa-circle.teal {
+    color: #AFEEEE;
+}
+
+.fa-circle.green {
+    color: #98FB98;
+}

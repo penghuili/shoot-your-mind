@@ -1,0 +1,7 @@
+<div class="card card-block addNewIdea"
+    [style.top.px]="newIdeaPosition.top"
+    [style.left.px]="newIdeaPosition.left">
+    <p class="card-text" id="newText" contenteditable
+        (keydown.enter)="onSave($event)"
+    >New Idea</p>
+</div>

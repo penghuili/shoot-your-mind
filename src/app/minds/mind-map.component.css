@@ -1,0 +1,30 @@
+.map-wrapper {
+    position: relative;
+    padding: 0;
+    margin-top: 1.5rem;
+}
+
+.borderBlue {
+    border: blue solid 1px;
+}
+
+sym-history-list {
+    position: absolute;
+    top: 1rem;
+    right: 3rem;
+}
+
+sym-idea {
+    position: absolute;
+}
+
+.canvas-history-wrapper {
+    position: relative;
+}
+
+.mind-title {
+    position: absolute;
+    left: 2.5rem;
+    top: 0.5rem;
+    color: #0275d8;
+}
