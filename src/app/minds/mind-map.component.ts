@@ -97,7 +97,7 @@ export class MindMapComponent implements OnDestroy, OnInit {
                     this.drawMovingLine(e);
                 }   
         });
-        this.mouseupOnIdeaSubscription =  this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {              
+        this.mouseupOnIdeaSubscription =  this.mouseupOnIdea$.subscribe((ei: EventAndIdea) => {  
             if(ei.event.button === 0) {
                 if(this.isMovingIdea) {
                     this.onIdeaMetadataUpdated(ei.idea);
@@ -161,7 +161,7 @@ export class MindMapComponent implements OnDestroy, OnInit {
         this.mousedownOnCanvasSubscription.unsubscribe();
         this.mouseupOnCanvasSubscription.unsubscribe();
     }
-    
+
     onMousedownOnIdea(e: MouseEvent, idea: Idea) {
         e.stopPropagation();
         let data: EventAndIdea = {
