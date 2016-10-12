@@ -32,3 +32,8 @@ protractor.conf.js
 #System Files
 .DS_Store
 Thumbs.db
+
+# firebase
+database.rules.json
+firebase.json
+.firebaserc
