@@ -9,4 +9,4 @@ Bootstrap
 
 website: https://shoot-your-mind.firebaseapp.com/
 
-![Alt text](/src/assets/home_page.png?raw=true "Home page")
+![Alt text](/home_page.png?raw=true "Home page")
