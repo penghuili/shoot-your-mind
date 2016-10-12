@@ -1,3 +1,3 @@
 # Shoot Your Mind
 
-Free style mind map.
+Free style Mind Map.
