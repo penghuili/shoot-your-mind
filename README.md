@@ -15,3 +15,4 @@ website: https://shoot-your-mind.firebaseapp.com/
 + Add "done" button on idea component
 + Add "back to minds" button on mind map component
 + Fix bug: update mind when hit enter will not create new mind now
++ Add about me page
