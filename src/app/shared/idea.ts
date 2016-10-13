@@ -8,9 +8,10 @@ export class Idea {
     height?: number;
     centerX?: number;
     centerY?: number;
-    isEditing?: boolean;
-    isSelected?: boolean;
     backgroundColor?: string;
     historyId?: string;
+    isEditing?: boolean;
+    isSelected?: boolean;
     isDeleted?: boolean;
+    isDone?: boolean;
 }

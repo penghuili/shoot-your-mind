@@ -126,17 +126,23 @@ export class IdeaComponent implements AfterViewInit, OnInit {
 
     changeColor(e: MouseEvent, color: string) {
         this.stopPropagationPlease(e);
-        let idea = Object.assign({}, this.idea, 
+        let newIdea = Object.assign({}, this.idea, 
             {
                 backgroundColor: color,
                 historyId: "idea-history" + new Date().getTime()
             });
-        this.ideaContentUpdated.next({oldIdea: this.idea, newIdea: idea});
+        this.ideaContentUpdated.next({oldIdea: this.idea, newIdea: newIdea});
     }
 
     onText(e: MouseEvent) {
         if(this.idea.isEditing) {
             this.stopPropagationPlease(e);
         }
+    }
+
+    onToggleDone(e: MouseEvent) {
+        this.stopPropagationPlease(e);
+        let newIdea = Object.assign({}, this.idea, { isDone: !this.idea.isDone });
+        this.ideaMetadataUpdated.next(newIdea);
     }
 }

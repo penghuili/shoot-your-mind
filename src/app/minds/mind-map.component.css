@@ -22,9 +22,12 @@ sym-idea {
     position: relative;
 }
 
-.mind-title {
+.mind-title-and-sidebar {
     position: absolute;
     left: 2.5rem;
     top: 0.5rem;
     color: #0275d8;
+}
+.mind-title-and-sidebar .btn {
+    padding: 0 1rem;
 }

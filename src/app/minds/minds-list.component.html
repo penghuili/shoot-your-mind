@@ -48,7 +48,7 @@
         </div>
         <div class="tab-pane" role="tabpanel" [class.active]="showAddNew">
           <div class="container form-container">
-            <form [formGroup]="newMindForm" (ngSubmit)="onAddMind()">
+            <form [formGroup]="newMindForm" (ngSubmit)="onSubmit()">
               <div class="form-group row">
                 <label for="title" class="col-sm-2 col-form-label">Title *</label>
                 <div class="col-sm-10">
@@ -69,9 +69,8 @@
                 <div class="offset-sm-2 col-sm-10">
                   <button type="button" class="btn btn-secondary btn-sm"
                       (click)="onCancel()">Cancel</button>
-                  <button type="button" class="btn btn-primary btn-sm"
+                  <button type="submit" class="btn btn-primary btn-sm"
                       *ngIf="isEditing"
-                      (click)="onUpdate($event)"
                       [disabled]="newMindForm.invalid">Update</button>
                   <button type="submit" class="btn btn-primary btn-sm"
                       *ngIf="!isEditing"

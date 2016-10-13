@@ -85,16 +85,26 @@ export class MindsListComponent implements OnInit, OnDestroy {
         this.goToAddNew();
     }
 
-    onAddMind() {
-        let mind = {
-            id: "mind" + new Date().getTime(),
-            title: this.title.value,
-            description: this.description.value,
-            deleted: false,
-            ideas: {},
-            lines: {}
-        };
-        this.ideasLinesService.addMind(mind);
+    onSubmit() {
+        if(this.isEditing) {
+            let mind = Object.assign({}, this.editingMind, {
+                title: this.title.value,
+                description: this.description.value
+            });
+            this.ideasLinesService.updateMind(mind);
+            this.isEditing = false;
+            this.editingMind = Object.assign({}, INIT_MIND);
+        } else {
+            let mind = {
+                id: "mind" + new Date().getTime(),
+                title: this.title.value,
+                description: this.description.value,
+                deleted: false,
+                ideas: {},
+                lines: {}
+            };
+            this.ideasLinesService.addMind(mind);
+        }
         this.resetForm();
         this.goToActive();
     }
@@ -129,17 +139,6 @@ export class MindsListComponent implements OnInit, OnDestroy {
         this.title.setValue(mind.title);
         this.description.setValue(mind.description);
         this.goToAddNew();
-    }
-
-    onUpdate(e: MouseEvent) {
-        let mind = Object.assign({}, this.editingMind, {
-            title: this.title.value,
-            description: this.description.value
-        });
-        this.ideasLinesService.updateMind(mind);
-        this.resetForm();
-        this.editingMind = Object.assign({}, INIT_MIND);
-        this.goToActive();
     }
 
     onDeleteForever(e: MouseEvent, mind: Mind) {
