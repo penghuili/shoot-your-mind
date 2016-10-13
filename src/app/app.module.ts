@@ -27,6 +27,7 @@ import { CanvasComponent } from './minds/canvas.component';
 import { SymFooterComponent } from './shared/sym-footer/sym-footer.component';
 import { HistoryCardComponent } from './minds/history-card.component';
 import { HistoryListComponent } from './minds/history-list.component';
+import { AboutMeComponent } from './about/about-me.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { HistoryListComponent } from './minds/history-list.component';
     CanvasComponent,
     SymFooterComponent,
     HistoryCardComponent,
-    HistoryListComponent
+    HistoryListComponent,
+    AboutMeComponent
   ],
   imports: [
     BrowserModule,

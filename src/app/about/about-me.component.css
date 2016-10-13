@@ -1,0 +1,8 @@
+.about-me-wrapper {
+    padding: 1.5rem 0;
+    background-color: yellow;
+}
+.about-me-wrapper .card {
+    background: none;
+    border: 0;
+}
