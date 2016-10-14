@@ -21,7 +21,7 @@ import {
     DELETE_IDEA,
     SELECT_IDEA,
     RECOVER_IDEA,
-    DELETE_IDEA_FOREVER,
+    DELETE_IDEAS_FOREVER,
 
     LOAD_LINES,
     UPDATE_LINES,
@@ -34,7 +34,7 @@ import {
     ADD_SELECTED_IDEA_HISTORY,
     DELETE_SELECTED_IDEA_HISTORY,
     RECOVER_IDEA_IN_HISTORY,
-    DELETE_ONE_IDEA_IN_HISTORY
+    DELETE_IDEAS_IN_HISTORY
 } from './reducers';
 import { INIT_MINDS } from './init-data';
 
@@ -167,9 +167,9 @@ export class IdeasLinesService {
         this.store.dispatch({type: RECOVER_IDEA, payload: data.recoverIdea});
     }
 
-    deleteHistoryIdea(idea: Idea, mindId: string) {
-        this.deleteHistoryIdeaInServer(idea, mindId);
-        this.store.dispatch({type: DELETE_ONE_IDEA_IN_HISTORY, payload: idea});
+    deleteHistoryIdeas(ideas: Idea[], mindId: string) {
+        this.deleteHistoryIdeasInServer(ideas, mindId);
+        this.store.dispatch({type: DELETE_IDEAS_IN_HISTORY, payload: ideas});
     }
 
     recoverDeletedIdea(idea: Idea, mindId: string) {
@@ -178,9 +178,9 @@ export class IdeasLinesService {
         this.store.dispatch({type: UPDATE_IDEA, payload: newIdea});
     }
 
-    deleteDeletedIdea(idea: Idea, mindId: string) {
-        this.deleteIdeaForeverFromServer(idea, mindId);
-        this.store.dispatch({type: DELETE_IDEA_FOREVER, payload: idea});
+    deleteDeletedIdeas(ideas: Idea[], mindId: string) {
+        this.deleteDeletedIdeasInServer(ideas, mindId);
+        this.store.dispatch({type: DELETE_IDEAS_FOREVER, payload: ideas});
     }
 
     addLine(line: Line, mindId: string) {
@@ -301,14 +301,19 @@ export class IdeasLinesService {
         this.setMinds(minds);
     }
 
-    private deleteHistoryIdeaInServer(idea: Idea, mindId: string) {
+    private deleteHistoryIdeasInServer(ideas: Idea[], mindId: string) {
         let minds = this.getMinds();
         let mind = minds[mindId];
-        let ideaHistory = mind.ideas[idea.id].history;
-        let filtered = ideaHistory.filter(i => {
-            return idea.historyId !== i.historyId;
-        });
-        minds[mindId].ideas[idea.id].history = filtered;
+        let ideaHistory = mind.ideas[ideas[0].id].history;
+        let filtered = [];
+        if(ideas.length === 1) {
+            filtered = ideaHistory.filter(i => {
+                return ideas[0].historyId !== i.historyId;
+            });
+        } else {
+            filtered = [ideaHistory[0]];
+        }
+        minds[mindId].ideas[ideas[0].id].history = filtered;
         this.setMinds(minds);
     }
 
@@ -316,6 +321,15 @@ export class IdeasLinesService {
         let minds = this.getMinds();
         let mind = minds[mindId];
         mind.ideas[idea.id].deleted = false;
+        this.setMinds(minds);
+    }
+
+    private deleteDeletedIdeasInServer(ideas: Idea[], mindId: string) {
+        let minds = this.getMinds();
+        let mind = minds[mindId];
+        ideas.forEach(i => {
+            delete mind.ideas[i.id];
+        });
         this.setMinds(minds);
     }
 

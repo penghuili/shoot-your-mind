@@ -46,9 +46,9 @@ export class MindMapComponent implements OnDestroy, OnInit {
     @Output() ideaSelected = new EventEmitter<Idea>();
     @Output() showHistory = new EventEmitter<Idea>();
     @Output() historyIdeaRecover = new EventEmitter();
-    @Output() historyIdeaDelete = new EventEmitter<Idea>();
+    @Output() historyIdeasDelete = new EventEmitter<Idea[]>();
     @Output() deletedIdeaRecover = new EventEmitter<Idea>();
-    @Output() deletedIdeaDelete = new EventEmitter<Idea>();
+    @Output() deletedIdeasDelete = new EventEmitter<Idea[]>();
 
     isAddingNewIdea = false;
     newIdeaPosition: Position;
@@ -246,14 +246,14 @@ export class MindMapComponent implements OnDestroy, OnInit {
         };
         this.historyIdeaRecover.next(data);
     }
-    onHistoryIdeaDelete(idea: Idea) {
-        this.historyIdeaDelete.next(idea);
+    onHistoryIdeasDelete(ideas: Idea[]) {
+        this.historyIdeasDelete.next(ideas);
     }
     onDeletedIdeaRecover(idea: Idea) {
         this.deletedIdeaRecover.next(idea);
     }
-    onDeletedIdeaDelete(idea: Idea) {
-        this.deletedIdeaDelete.next(idea);
+    onDeletedIdeasDelete(ideas: Idea[]) {
+        this.deletedIdeasDelete.next(ideas);
     }
 
     private initState() {

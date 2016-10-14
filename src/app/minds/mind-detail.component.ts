@@ -108,15 +108,15 @@ export class MindDetailComponent implements OnInit, OnDestroy {
         this.ideasLinesService.recoverHistoryIdea(data, this.mindId);
     }
 
-    onHistoryIdeaDelete(idea: Idea) {
-        this.ideasLinesService.deleteHistoryIdea(idea, this.mindId);
+    onHistoryIdeasDelete(ideas: Idea[]) {
+        this.ideasLinesService.deleteHistoryIdeas(ideas, this.mindId);
     }
 
     onDeletedIdeaRecover(idea: Idea) {
         this.ideasLinesService.recoverDeletedIdea(idea, this.mindId);
     }
 
-    onDeletedIdeaDelete(idea: Idea) {
-        this.ideasLinesService.deleteDeletedIdea(idea, this.mindId);
+    onDeletedIdeasDelete(ideas: Idea[]) {
+        this.ideasLinesService.deleteDeletedIdeas(ideas, this.mindId);
     }
 }

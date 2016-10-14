@@ -16,7 +16,7 @@ export const UPDATE_IDEA = "UPDATE_IDEA";
 export const ADD_IDEA = "ADD_IDEA";
 export const DELETE_IDEA = "DELETE_IDEA";
 export const RECOVER_IDEA = "RECOVER_IDEA";
-export const DELETE_IDEA_FOREVER = "DELETE_IDEA_FOREVER";
+export const DELETE_IDEAS_FOREVER = "DELETE_IDEA_FOREVER";
 
 export const LOAD_LINES = "LOAD_LINES";
 export const UPDATE_LINES = "UPDATE_LINES";
@@ -30,7 +30,7 @@ export const LOAD_SELECTED_IDEA_HISTORY = "LOAD_SELECTED_IDEA_HISTORY";
 export const ADD_SELECTED_IDEA_HISTORY = "ADD_SELECTED_IDEA_HISTORY";
 export const DELETE_SELECTED_IDEA_HISTORY = "DELETE_HISTORY";
 export const RECOVER_IDEA_IN_HISTORY = "RECOVER_IDEA_IN_HISTORY";
-export const DELETE_ONE_IDEA_IN_HISTORY = "DELETE_ONE_IDEA_IN_HISTORY";
+export const DELETE_IDEAS_IN_HISTORY = "DELETE_ONE_IDEA_IN_HISTORY";
 
 export interface AppStore {
     ideas: Idea[];
@@ -112,9 +112,15 @@ export const ideasReducer: ActionReducer<Idea[]> =
                     return i.id !== action.payload.id;
                 });
                 return [action.payload, ...filtered];
-            case DELETE_IDEA_FOREVER:
+            case DELETE_IDEAS_FOREVER:
                 return state.filter(idea => {
-                    return idea.id !== action.payload.id;
+                    let notInPayload = true;
+                    action.payload.forEach(i => {
+                        if(i.id === idea.id) {
+                            notInPayload = false;
+                        }
+                    });
+                    return notInPayload;
                 });
             default:
                 return state;
@@ -180,9 +186,15 @@ export const selectedIdeaHistoryReducer: ActionReducer<Idea[]> =
                 });
                 let currentIdea = Object.assign({}, action.payload.currentIdea);
                 return [currentIdea, ...filtered];
-            case DELETE_ONE_IDEA_IN_HISTORY:
-                return state.filter(i => {
-                    return i.historyId !== action.payload.historyId;
+            case DELETE_IDEAS_IN_HISTORY:
+                return state.filter(idea => {
+                    let notInPayload = true;
+                    action.payload.forEach(i => {
+                        if(i.historyId === idea.historyId) {
+                            notInPayload = false;
+                        }
+                    });
+                    return notInPayload;
                 });
             default:
                 return state;

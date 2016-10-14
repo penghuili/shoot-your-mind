@@ -5,7 +5,7 @@
     overflow: auto;
 }
 
-.no-idea {
+.help-message {
     width: 15rem;
-    margin-top: 1rem;
+    padding: 1rem;
 }

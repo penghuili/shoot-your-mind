@@ -19,9 +19,9 @@
             [deletedIdeas]="deletedIdeas"
             [listHeight]="historyListHeight"
             (historyIdeaRecover)="onHistoryIdeaRecover($event)"
-            (historyIdeaDelete)="onHistoryIdeaDelete($event)"
+            (historyIdeasDelete)="onHistoryIdeasDelete($event)"
             (deletedIdeaRecover)="onDeletedIdeaRecover($event)"
-            (deletedIdeaDelete)="onDeletedIdeaDelete($event)">
+            (deletedIdeasDelete)="onDeletedIdeasDelete($event)">
         </sym-history-list>
     </div>
     <sym-idea *ngFor="let idea of activeIdeas" 

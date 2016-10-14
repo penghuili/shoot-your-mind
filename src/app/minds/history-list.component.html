@@ -13,23 +13,33 @@
     </ul>
 
     <div class="tab-content" [style.height.px]="listHeight">
-      <div class="tab-pane" role="tabpanel" [class.active]="isShowCurrent">        
+      <div class="tab-pane" role="tabpanel" [class.active]="isShowCurrent">
+        <div class="text-sm-center help-message" *ngIf="hasHistory">
+          <button class="btn btn-danger btn-sm"
+              (mousedown)="stopPropagationPlease($event)"
+              (mouseup)="onDeleteAllHistory($event)">Clear All</button>
+        </div>   
         <sym-history-card *ngFor="let idea of _historyIdeas"
             [idea]="idea"
             (ideaRecover)="onHistoryIdeaRecover($event)"
             (ideaDelete)="onHistoryIdeaDelete($event)">
         </sym-history-card>
-        <div class="text-sm-center no-idea" *ngIf="!hasHistory">
+        <div class="text-sm-center help-message" *ngIf="!hasHistory">
           <p>No history.</p>
         </div>
       </div>
-      <div class="tab-pane" role="tabpanel" [class.active]="isShowDeleted">        
+      <div class="tab-pane" role="tabpanel" [class.active]="isShowDeleted">   
+        <div class="text-sm-center help-message" *ngIf="hasDeletedIdeas">
+          <button class="btn btn-danger btn-sm"
+              (mousedown)="stopPropagationPlease($event)"
+              (mouseup)="onDeleteAllDeleted($event)">Clear All</button>
+        </div>     
         <sym-history-card *ngFor="let idea of _deletedIdeas"
             [idea]="idea"
             (ideaRecover)="onDeletedIdeaRecover($event)"
             (ideaDelete)="onDeletedIdeaDelete($event)">
         </sym-history-card>
-        <div class="text-sm-center no-idea" *ngIf="!hasDeletedIdeas">
+        <div class="text-sm-center help-message" *ngIf="!hasDeletedIdeas">
           <p>No deleted Ideas.</p>
         </div>
       </div>

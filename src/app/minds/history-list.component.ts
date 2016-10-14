@@ -24,9 +24,9 @@ export class HistoryListComponent {
   }
   @Input() listHeight: number;
   @Output() historyIdeaRecover = new EventEmitter<Idea>();
-  @Output() historyIdeaDelete = new EventEmitter<Idea>();
+  @Output() historyIdeasDelete = new EventEmitter<Idea[]>();
   @Output() deletedIdeaRecover = new EventEmitter<Idea>();
-  @Output() deletedIdeaDelete = new EventEmitter<Idea>();
+  @Output() deletedIdeasDelete = new EventEmitter<Idea[]>();
   _historyIdeas: Idea[];
   hasHistory: boolean;
   _deletedIdeas: Idea[];
@@ -38,13 +38,13 @@ export class HistoryListComponent {
     this.historyIdeaRecover.next(idea);
   }
   onHistoryIdeaDelete(idea: Idea) {
-    this.historyIdeaDelete.next(idea);
+    this.historyIdeasDelete.next([idea]);
   }
   onDeletedIdeaRecover(idea: Idea) {
     this.deletedIdeaRecover.next(idea);
   }
   onDeletedIdeaDelete(idea: Idea) {
-    this.deletedIdeaDelete.next(idea);
+    this.deletedIdeasDelete.next([idea]);
   }
 
   stopPropagationPlease(e: MouseEvent) {
@@ -59,5 +59,13 @@ export class HistoryListComponent {
     this.stopPropagationPlease(e);
     this.isShowCurrent = false;
     this.isShowDeleted = true;
+  }
+  onDeleteAllHistory(e: MouseEvent) {
+    this.stopPropagationPlease(e);
+    this.historyIdeasDelete.next(this._historyIdeas);
+  }
+  onDeleteAllDeleted(e: MouseEvent) {
+    this.stopPropagationPlease(e);
+    this.deletedIdeasDelete.next(this._deletedIdeas);
   }
 }
