@@ -55,7 +55,8 @@ export class IdeasLinesService {
                 id: k,
                 title: minds[k].title,
                 description: minds[k].description,
-                deleted: minds[k].deleted
+                deleted: minds[k].deleted,
+                done: minds[k].done
             };
             mindsInfo.push(info);
         });

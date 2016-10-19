@@ -15,6 +15,9 @@
         <li class="nav-item">
           <a class="nav-link" [class.active]="showDeleted" (click)="onShowDeleted($event)">Trash</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="showDone" (click)="onShowDone($event)">Done</a>
+        </li>
       </ul>
 
       <div class="tab-content">
@@ -23,27 +26,39 @@
             <a class="list-group-item list-group-item-action"
                 [routerLink]="[mind.id]"
                 *ngFor="let mind of activeMinds">
+              <span class="fa fa-check pull-sm-right" (click)="onDone($event, mind)"></span>
               <span class="fa fa-trash-o pull-sm-right" (click)="onDelete($event, mind)"></span>
               <span class="fa fa-edit pull-sm-right" (click)="onEdit($event, mind)"></span>
               <h5 class="list-group-item-heading">{{mind.title}}</h5>
               <p class="list-group-item-text">{{mind.description}}</p>
             </a>
-            <p class="list-group-item" *ngIf="noActiveMinds">You haven't create Minds.</p>
+            <p class="list-group-item" *ngIf="noActiveMind">You don't have any mind now.</p>
           </div>
         </div>
         <div class="tab-pane" role="tabpanel" [class.active]="showDeleted">
           <div class="list-group">
-            <a class="list-group-item list-group-item-action"
+            <a class="list-group-item list-group-item-action deleted-item"
                 [routerLink]="[mind.id]"
                 *ngFor="let mind of deletedMinds">
-                <span class="fa fa-trash pull-sm-right" 
-                    (click)="onDeleteForever($event, mind)"></span>
-                <span class="fa fa-undo pull-sm-right"
-                    (click)="onRecover($event, mind)"></span>
+              <span class="fa fa-trash pull-sm-right" (click)="onDeleteForever($event, mind)"></span>
+              <span class="fa fa-undo pull-sm-right" (click)="onRecover($event, mind)"></span>
               <h5 class="list-group-item-heading">{{mind.title}}</h5>
               <p class="list-group-item-text">{{mind.description}}</p>
             </a>
-            <p class="list-group-item" *ngIf="noDeletedMinds">There are no deleted minds.</p>
+            <p class="list-group-item" *ngIf="noDeletedMind">You don't have any deleted mind.</p>
+          </div>
+        </div>
+        <div class="tab-pane" role="tabpanel" [class.active]="showDone">
+          <div class="list-group">
+            <a class="list-group-item list-group-item-action"
+                [routerLink]="[mind.id]"
+                *ngFor="let mind of doneMinds">
+              <span class="fa fa-trash-o pull-sm-right" (click)="onDelete($event, mind)"></span>
+              <span class="fa fa-undo pull-sm-right" (click)="onDone($event, mind)"></span>
+              <h5 class="list-group-item-heading done-item">{{mind.title}}</h5>
+              <p class="list-group-item-text done-item">{{mind.description}}</p>
+            </a>
+            <p class="list-group-item" *ngIf="noDoneMind">You don't have any done mind.</p>
           </div>
         </div>
         <div class="tab-pane" role="tabpanel" [class.active]="showAddNew">

@@ -17,18 +17,21 @@ import { INIT_MIND } from '../shared/init-data';
 
 @Component({
     selector: "sym-minds-list",
-    templateUrl: "./minds-list.component.html",
-    styleUrls: ["./minds-list.component.css"]
+    templateUrl: "./mind-list.component.html",
+    styleUrls: ["./mind-list.component.css"]
 })
-export class MindsListComponent implements OnInit, OnDestroy {
+export class MindListComponent implements OnInit, OnDestroy {
     minds: Observable<Mind[]>;
     mindsSub: any;
     activeMinds: Mind[];
     deletedMinds: Mind[];
-    noActiveMinds: boolean;
-    noDeletedMinds: boolean;
+    doneMinds: Mind[];
+    noActiveMind: boolean;
+    noDeletedMind: boolean;
+    noDoneMind: boolean;
     showActive: boolean = true;
     showDeleted: boolean = false;
+    showDone: boolean = false;
     showAddNew: boolean = false;
     isEditing: boolean = false;
 
@@ -56,13 +59,17 @@ export class MindsListComponent implements OnInit, OnDestroy {
         this.minds = this.store.select("minds");
         this.mindsSub = this.minds.subscribe(minds => {
             this.activeMinds = minds.filter(mind =>{
-                return !mind.deleted;
+                return !mind.deleted && !mind.done;
             });
             this.deletedMinds = minds.filter(mind => {
                 return mind.deleted;
             });
-            this.noActiveMinds = this.activeMinds.length === 0;
-            this.noDeletedMinds = this.deletedMinds.length === 0;
+            this.doneMinds = minds.filter(mind => {
+                return !mind.deleted && mind.done;
+            });
+            this.noActiveMind = this.activeMinds.length === 0;
+            this.noDeletedMind = this.deletedMinds.length === 0;
+            this.noDoneMind = this.doneMinds.length === 0;
         });
         this.ideasLinesService.loadMinds();
     }
@@ -79,6 +86,11 @@ export class MindsListComponent implements OnInit, OnDestroy {
     onShowDeleted(e: MouseEvent) {
         e.preventDefault();
         this.goToDeleted();
+    }
+
+    onShowDone(e: MouseEvent) {
+        e.preventDefault();
+        this.gotoDone();
     }
 
     onShowAddNew(e: MouseEvent) {
@@ -154,19 +166,35 @@ export class MindsListComponent implements OnInit, OnDestroy {
         this.ideasLinesService.updateMind(updatedMind);
     }
 
+    onDone(e: MouseEvent, mind: Mind) {
+        e.preventDefault();
+        e.stopPropagation();
+        let doneMind = Object.assign({}, mind, {done: !mind.done});
+        this.ideasLinesService.updateMind(doneMind);
+    }
+
     private goToActive() {
         this.showAddNew = false;
         this.showDeleted = false;
+        this.showDone = false;
         this.showActive = true;
     }
     private goToDeleted() {
         this.showAddNew = false;
         this.showActive = false;
+        this.showDone = false;
         this.showDeleted = true;
+    }
+    private gotoDone() {
+        this.showActive = false;
+        this.showAddNew = false;
+        this.showDeleted = false;
+        this.showDone = true;
     }
     private goToAddNew() {
         this.showActive = false;
         this.showDeleted = false;
+        this.showDone = false;
         this.showAddNew = true;
     }
     private resetForm() {

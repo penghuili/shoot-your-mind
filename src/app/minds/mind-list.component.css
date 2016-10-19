@@ -32,6 +32,14 @@ a {
     border: none;
 }
 
+.deleted-item {
+    text-decoration: line-through;
+}
+
+.done-item {
+    color: green;
+}
+
 .form-container {
     padding-top: 0.8rem;
 }

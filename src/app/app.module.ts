@@ -19,7 +19,7 @@ import { IdeasLinesService } from './shared/ideas-lines.service';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { MindDetailComponent } from './minds/mind-detail.component';
-import { MindsListComponent } from './minds/minds-list.component';
+import { MindListComponent } from './minds/mind-list.component';
 import { MindMapComponent } from './minds/mind-map.component';
 import { IdeaComponent } from './minds/idea.component';
 import { NewIdeaComponent } from './minds/new-idea.component';
@@ -34,7 +34,7 @@ import { AboutMeComponent } from './about/about-me.component';
     AppComponent,
     HomeComponent,
     MindDetailComponent,
-    MindsListComponent,
+    MindListComponent,
     MindMapComponent,
     IdeaComponent,
     NewIdeaComponent,

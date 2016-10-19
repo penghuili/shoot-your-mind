@@ -8,4 +8,5 @@ export class Mind {
     deleted?: boolean;
     ideas?: any;
     lines?: any;
+    done?: boolean;
 }
