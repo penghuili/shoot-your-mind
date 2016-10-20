@@ -56,7 +56,7 @@ export class IdeasLinesService {
             localStorage.setItem("sym-minds", JSON.stringify(INIT_MINDS));
         }
         let minds = this.getMinds();
-        let ordered = minds.orderedMinds;
+        let ordered = minds.orderedMinds ? minds.orderedMinds : Object.keys(minds);
         let mindsInfo: Mind[] = [];
         ordered.forEach(k => {
             let info = {
