@@ -1,6 +1,6 @@
 import { Idea } from './idea';
 
-export class Line {
+export interface Line {
     id: string;
     ideaAId?: string;
     ideaBId?: string;

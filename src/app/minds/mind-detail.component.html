@@ -1,9 +1,10 @@
 <sym-mind-map
     [activeIdeas]="activeIdeas"
     [deletedIdeas]="deletedIdeas"
-    [lines]="lines | async"
-    [selectedIdeaHistory]="selectedIdeaHistory | async"
+    [lines]="lines$ | async"
+    [selectedIdeaHistory]="selectedIdeaHistory$ | async"
     [mind]="mind"
+    [appConfig]="appConfig"
     (lineMoving)="onLineMoving($event)"
     (movingLineDeleted)="onMovingLineDeleted($event)"
     (lineAdded)="onLineAdded($event)"
@@ -18,5 +19,6 @@
     (historyIdeaRecover)="onHistoryIdeaRecover($event)"
     (historyIdeasDelete)="onHistoryIdeasDelete($event)"
     (deletedIdeaRecover)="onDeletedIdeaRecover($event)"
-    (deletedIdeasDelete)="onDeletedIdeasDelete($event)">
+    (deletedIdeasDelete)="onDeletedIdeasDelete($event)"
+    (canvasExpand)="onCanvasExpand($event)">
 </sym-mind-map>

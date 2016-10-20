@@ -5,6 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { Idea } from './idea';
 import { Line } from './line';
 import { Mind } from './mind';
+import { AppConfig } from './app-config';
 import { AppStore } from './reducers';
 
 import {
@@ -34,23 +35,30 @@ import {
     ADD_SELECTED_IDEA_HISTORY,
     DELETE_SELECTED_IDEA_HISTORY,
     RECOVER_IDEA_IN_HISTORY,
-    DELETE_IDEAS_IN_HISTORY
+    DELETE_IDEAS_IN_HISTORY,
+
+    LOAD_APP_CONFIG,
+    EXPAND_CANVAS
 } from './reducers';
-import { INIT_MINDS } from './init-data';
+import { 
+    INIT_MINDS,
+    INIT_APP_CONFIG
+ } from './init-data';
 
 @Injectable()
 export class IdeasLinesService {
 
     constructor(private store: Store<AppStore>) {}
 
+    // methods related to mind
     loadMinds() {
         if(!localStorage.getItem("sym-minds")) {
             localStorage.setItem("sym-minds", JSON.stringify(INIT_MINDS));
         }
         let minds = this.getMinds();
-        let mindsKeys = Object.keys(minds);
+        let ordered = minds.orderedMinds;
         let mindsInfo: Mind[] = [];
-        mindsKeys.forEach(k => {
+        ordered.forEach(k => {
             let info = {
                 id: k,
                 title: minds[k].title,
@@ -95,6 +103,7 @@ export class IdeasLinesService {
         this.store.dispatch({type: CLEAR_MIND_TRASH, payload: ""});
     }
 
+    // methods related to idea
     loadIdeasAndLines(mindId: string) {
         let minds = this.getMinds();
         let mind = minds[mindId];
@@ -184,6 +193,7 @@ export class IdeasLinesService {
         this.store.dispatch({type: DELETE_IDEAS_FOREVER, payload: ideas});
     }
 
+    // methods related to line
     addLine(line: Line, mindId: string) {
         this.addLineToServer(line, mindId);
         let movingLine = Object.assign({}, line, {id: "addMovingLine"});
@@ -210,6 +220,7 @@ export class IdeasLinesService {
         this.store.dispatch({type: DELETE_LINES, payload: lines});
     }
 
+    // methods related to history
     loadSelectedIdeaHistory(idea: Idea, mindId: string) {
         let minds = this.getMinds();
         let mind = minds[mindId];
@@ -223,8 +234,30 @@ export class IdeasLinesService {
         }
     }
 
+    // methods related to AppConfig
+    loadAppConfig(mindId: string) {
+        let minds = this.getMinds();
+        let mind = minds[mindId];
+        let appConfig: AppConfig;
+        if(mind.config) {
+            appConfig = Object.assign({}, mind.config);
+            this.store.dispatch({type: LOAD_APP_CONFIG, payload: appConfig});
+        } else {
+            mind.config = Object.assign({}, INIT_APP_CONFIG);
+            this.setMinds(minds);
+            appConfig = Object.assign({}, INIT_APP_CONFIG);
+            this.store.dispatch({type: LOAD_APP_CONFIG, payload: appConfig});
+        }
+    }
+
+    expandCanvas(deltaHeight: number, mindId: string) {
+        this.expandCanvasInServer(deltaHeight, mindId);
+        this.store.dispatch({type: EXPAND_CANVAS, payload: deltaHeight});
+    }
+
     private addMindToServer(mind: Mind) {
         let minds = this.getMinds();
+        minds.orderedMinds.unshift(mind.id);
         minds[mind.id] = mind;
         this.setMinds(minds);
     }
@@ -243,15 +276,21 @@ export class IdeasLinesService {
 
     private deleteMindForeverFromServer(mind: Mind) {
         let minds = this.getMinds();
+        let ordered = minds.orderedMinds;
+        let index = ordered.indexOf(mind.id);
+        ordered.splice(index, 1);
         delete minds[mind.id];
         this.setMinds(minds);
     }
 
     private clearMindTrashFromServer() {
         let minds = this.getMinds();
+        let ordered = minds.orderedMinds;
         let keys = Object.keys(minds);
         keys.forEach(k => {
             if(minds[k].deleted) {
+                let index = ordered.indexOf(k);
+                ordered.splice(index, 1);
                 delete minds[k];
             }
         });
@@ -373,6 +412,13 @@ export class IdeasLinesService {
             line: lineForServer,
             deleted: false
         };       
+        this.setMinds(minds);
+    }
+
+    private expandCanvasInServer(deltaHeight: number, mindId: string) {
+        let minds = this.getMinds();
+        let mind = minds[mindId];
+        mind.config.canvasHeight += deltaHeight;
         this.setMinds(minds);
     }
 

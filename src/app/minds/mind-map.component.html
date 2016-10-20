@@ -1,15 +1,14 @@
 <div class="map-wrapper" #mapWrapper
+    [attr.width]="canvasWidth"
     (mousemove)="onMousemoveOnContainer($event)">
     <div class="canvas-history-wrapper">
         <div class="mind-title-and-sidebar">
             <h5 class="mind-title">{{mind.title}}</h5>
             <a class="btn btn-primary btn-sm" [routerLink]="['/minds']"><<</a>
         </div>
-        <sym-canvas 
+        <sym-canvas
             [lines]="lines"
-            [canvasWidth]="canvasWidth"
-            [canvasHeight]="canvasHeight"
-            [isMindDeleted]="mind.deleted"
+            [canvasArr]="canvasArr"
             (mousedown)="onMousedownOnCanvas($event)"
             (mouseup)="onMouseupOnCanvas($event)"
             (canvasOffsetReady)="onCanvasOffsetReady($event)">
@@ -23,6 +22,10 @@
             (deletedIdeaRecover)="onDeletedIdeaRecover($event)"
             (deletedIdeasDelete)="onDeletedIdeasDelete($event)">
         </sym-history-list>
+        <div class="expand-button">
+            <span class="fa fa-angle-double-down"
+                (click)="onCanvasExpand($event)"></span>
+        </div>
     </div>
     <sym-idea *ngFor="let idea of activeIdeas" 
         [idea]="idea"
@@ -43,3 +46,5 @@
         (newIdea)="onNewIdea($event)"
         *ngIf="isAddingNewIdea"></sym-new-idea>
 </div>
+
+<sym-footer></sym-footer>

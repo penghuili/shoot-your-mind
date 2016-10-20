@@ -1,7 +1,7 @@
 .map-wrapper {
     position: relative;
     padding: 0;
-    margin-top: 1.5rem;
+    margin: 1.5rem auto;
 }
 
 .borderBlue {
@@ -30,4 +30,11 @@ sym-idea {
 }
 .mind-title-and-sidebar .btn {
     padding: 0 1rem;
+}
+
+.expand-button {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 3rem;
+    font-size: 2rem;
 }

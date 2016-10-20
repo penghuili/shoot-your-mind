@@ -12,7 +12,8 @@ import {
   ideasReducer, 
   linesReducer,
   mindsReducer,
-  selectedIdeaHistoryReducer
+  selectedIdeaHistoryReducer,
+  appConfigReducer
 } from './shared/reducers';
 import { IdeasLinesService } from './shared/ideas-lines.service';
 
@@ -54,7 +55,8 @@ import { AboutMeComponent } from './about/about-me.component';
       ideas: ideasReducer, 
       lines: linesReducer,
       minds: mindsReducer,
-      selectedIdeaHistory: selectedIdeaHistoryReducer
+      selectedIdeaHistory: selectedIdeaHistoryReducer,
+      appConfig: appConfigReducer
     })
   ],
   providers: [

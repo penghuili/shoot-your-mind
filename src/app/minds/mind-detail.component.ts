@@ -12,6 +12,7 @@ import { IdeasLinesService } from '../shared/ideas-lines.service';
 import { Idea } from '../shared/idea';
 import { Line } from '../shared/line';
 import { Mind } from '../shared/mind';
+import { AppConfig } from '../shared/app-config';
 
 @Component({
     selector: "sym-minds",
@@ -19,15 +20,18 @@ import { Mind } from '../shared/mind';
     styleUrls: ["./mind-detail.component.css"]
 })
 export class MindDetailComponent implements OnInit, OnDestroy {
-    ideas: Observable<Idea[]>;
-    lines: Observable<Line[]>;
-    selectedIdeaHistory: Observable<Idea[]>;
+    ideas$: Observable<Idea[]>;
+    lines$: Observable<Line[]>;
+    selectedIdeaHistory$: Observable<Idea[]>;
+    appCongig$: Observable<AppConfig>;
+    appConfig: AppConfig;
     activeIdeas: Idea[];
     deletedIdeas: Idea[];
     mind: Mind;
 
     private routeSub: any;
     private ideasSub: any;
+    private AppConfigSub: any;
     private mindId: string;
 
     constructor(
@@ -40,11 +44,14 @@ export class MindDetailComponent implements OnInit, OnDestroy {
         this.routeSub = this.route.params.subscribe(params => {
             this.mindId = params["mindId"];
         });
-        this.ideas = this.store.select("ideas");
-        this.lines = this.store.select("lines");
-        this.selectedIdeaHistory = this.store.select("selectedIdeaHistory");
+        this.ideas$ = this.store.select("ideas");
+        this.lines$ = this.store.select("lines");
+        this.selectedIdeaHistory$ = this.store.select("selectedIdeaHistory");
+        this.appCongig$ = this.store.select("appConfig");
         this.mind = this.ideasLinesService.loadIdeasAndLines(this.mindId);
-        this.ideasSub = this.ideas.subscribe(ideas => {
+        this.ideasLinesService.loadAppConfig(this.mindId);
+
+        this.ideasSub = this.ideas$.subscribe(ideas => {
             this.activeIdeas = ideas.filter(idea => {
                 return !idea.isDeleted;
             });
@@ -52,11 +59,16 @@ export class MindDetailComponent implements OnInit, OnDestroy {
                 return idea.isDeleted;
             });
         });
+
+        this.AppConfigSub = this.appCongig$.subscribe(config => {
+            this.appConfig = Object.assign({}, config);
+        });
     }
 
     ngOnDestroy() {
         this.routeSub.unsubscribe();
         this.ideasSub.unsubscribe();
+        this.AppConfigSub.unsubscribe();
     }
 
 
@@ -118,5 +130,9 @@ export class MindDetailComponent implements OnInit, OnDestroy {
 
     onDeletedIdeasDelete(ideas: Idea[]) {
         this.ideasLinesService.deleteDeletedIdeas(ideas, this.mindId);
+    }
+
+    onCanvasExpand(deltaHeight: number) {
+        this.ideasLinesService.expandCanvas(deltaHeight, this.mindId);
     }
 }

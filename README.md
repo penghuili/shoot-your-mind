@@ -10,6 +10,11 @@ Bootstrap
 website: https://shoot-your-mind.firebaseapp.com/
 
 ![Alt text](/home_page.png?raw=true "Home page")
+2016-10-20
++ Canvas can have unlimited height now
++ Mind list is shown based on time created
++ Refactored CanvasComponent to use *ngFor, otherwise canvas will not re-render after height changes
++ Add AppConfig to ngrx
 
 2016-10-19
 + Add shadow to history list

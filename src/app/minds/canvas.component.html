@@ -1,5 +1,7 @@
-<canvas #canvas 
-    [attr.width.px]="canvasWidth" 
-    [attr.height.px]="canvasHeight"
-    [style.border-color]="isMindDeleted ? 'red' : '#ddd'">
-</canvas>
+<div #canvas class="canvas-wrapper">
+    <canvas *ngFor="let canvas of canvasArr"
+        [attr.width.px]="canvas.canvasWidth" 
+        [attr.height.px]="canvas.canvasHeight"
+        [style.border-color]="canvas.isMindDeleted ? 'red' : '#ddd'">
+    </canvas>
+</div>

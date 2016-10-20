@@ -1,7 +1,8 @@
 import { Idea } from './idea';
 import { Line } from './line';
+import { AppConfig } from './app-config';
 
-export class Mind {
+export interface Mind {
     id: string;
     title: string;
     description?: string;
@@ -9,4 +10,5 @@ export class Mind {
     ideas?: any;
     lines?: any;
     done?: boolean;
+    config?: AppConfig;
 }

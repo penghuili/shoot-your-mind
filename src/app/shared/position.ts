@@ -1,9 +1,5 @@
 
-export class Position {
+export interface Position {
     left: number;
     top: number;
-    // constructor(
-    //     public left: number,
-    //     public top: number
-    // ) {}
 }

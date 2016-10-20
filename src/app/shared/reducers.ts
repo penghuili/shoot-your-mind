@@ -3,6 +3,7 @@ import { ActionReducer, Action } from '@ngrx/store';
 import { Idea } from './idea';
 import { Line } from './line';
 import { Mind } from './mind';
+import { AppConfig } from './app-config';
 
 export const LOAD_MINDS = "LOAD_MINDS";
 export const ADD_MIND = "ADD_MIND";
@@ -32,11 +33,15 @@ export const DELETE_SELECTED_IDEA_HISTORY = "DELETE_HISTORY";
 export const RECOVER_IDEA_IN_HISTORY = "RECOVER_IDEA_IN_HISTORY";
 export const DELETE_IDEAS_IN_HISTORY = "DELETE_ONE_IDEA_IN_HISTORY";
 
+export const LOAD_APP_CONFIG = "LOAD_APP_CONFIG";
+export const EXPAND_CANVAS = "EXPAND_CANVAS";
+
 export interface AppStore {
     ideas: Idea[];
     lines: Line[];
     minds: Mind[];
     selectedIdeaHistory: Idea[];
+    appConfig: AppConfig;
 }
 
 export const mindsReducer: ActionReducer<Mind[]> = (state: Mind[] = [], action: Action) => {
@@ -201,3 +206,15 @@ export const selectedIdeaHistoryReducer: ActionReducer<Idea[]> =
         }
     }
 
+export const appConfigReducer: ActionReducer<AppConfig> = 
+    (state: AppConfig = {}, action: Action) => {
+        switch(action.type) {
+            case LOAD_APP_CONFIG:
+                return action.payload;
+            case EXPAND_CANVAS:
+                return Object.assign({}, state, 
+                    {canvasHeight: state.canvasHeight + action.payload});
+            default:
+                return state;
+        }
+    }

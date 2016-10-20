@@ -7,7 +7,7 @@ import {
   Input,
   OnChanges,
   Output,
-  ViewChild 
+  ViewChild
   } from '@angular/core';
 
 import { Line } from '../shared/line';
@@ -19,17 +19,15 @@ import { Line } from '../shared/line';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CanvasComponent implements AfterViewInit, OnChanges {
-  @Input() canvasWidth: number;
-  @Input() canvasHeight: number;
-  @Input() isMindDeleted: boolean;
+  @Input() canvasArr: any[];
   @Input() lines: Line[];
   @Output() canvasOffsetReady = new EventEmitter();
-  // Use ElementRef and querySelector to get canvas
   @ViewChild("canvas") canvas: ElementRef;
   ctx: CanvasRenderingContext2D;
 
+
   ngAfterViewInit() {
-    let node = this.canvas.nativeElement;
+    let node = this.canvas.nativeElement.querySelector("canvas");
     let canvasOffsetLeft = this.getContainerPosition(node, "offsetLeft");
     let canvasOffsetTop = this.getContainerPosition(node, "offsetTop");
     this.canvasOffsetReady.next({canvasOffsetLeft, canvasOffsetTop});
@@ -48,16 +46,19 @@ export class CanvasComponent implements AfterViewInit, OnChanges {
   }
 
   private drawLines() {
-    this.ctx = this.canvas.nativeElement.getContext("2d");
-    this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    let node = this.canvas.nativeElement;
+    if(node.children.length > 0) {
+      this.ctx = node.firstElementChild.getContext("2d");
+      this.ctx.clearRect(0, 0, this.canvasArr[0].canvasWidth, this.canvasArr[0].canvasHeight);
 
-    this.lines.forEach(line => {
-      this.drawLine(
-        line.ideaA.centerX,
-        line.ideaA.centerY,
-        line.ideaB.centerX,
-        line.ideaB.centerY);
-    });
+      this.lines.forEach(line => {
+        this.drawLine(
+          line.ideaA.centerX,
+          line.ideaA.centerY,
+          line.ideaB.centerX,
+          line.ideaB.centerY);
+      });
+    }
   }
 
   private getContainerPosition(node: any, direction: string, isFirstTime = true) {

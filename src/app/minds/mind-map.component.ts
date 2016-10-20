@@ -16,6 +16,7 @@ import { Idea } from '../shared/idea';
 import { Line } from '../shared/line';
 import { Mind } from '../shared/mind';
 import { Position } from '../shared/position';
+import { AppConfig } from '../shared/app-config';
 import {
     INIT_POSITION,
     INIT_IDEA,
@@ -34,6 +35,13 @@ export class MindMapComponent implements OnDestroy, OnInit {
     @Input() lines: Line[];
     @Input() selectedIdeaHistory: Idea[];
     @Input() mind: Mind;
+    @Input() set appConfig(value: AppConfig) {
+        this.canvasArr = [{
+            canvasWidth: window.innerWidth * 0.95,
+            canvasHeight: value.canvasHeight,
+            isMindDeleted: this.mind.deleted
+        }];
+    }
     @Output() lineAdded = new EventEmitter<Line>();
     @Output() lineMoving = new EventEmitter<Line>();
     @Output() movingLineDeleted = new EventEmitter<Line>();
@@ -49,12 +57,12 @@ export class MindMapComponent implements OnDestroy, OnInit {
     @Output() historyIdeasDelete = new EventEmitter<Idea[]>();
     @Output() deletedIdeaRecover = new EventEmitter<Idea>();
     @Output() deletedIdeasDelete = new EventEmitter<Idea[]>();
+    @Output() canvasExpand = new EventEmitter<number>();
 
     isAddingNewIdea = false;
     newIdeaPosition: Position;
     isShowHistory: boolean = false;
-    canvasWidth: number;
-    canvasHeight: number;
+    canvasArr: any[];
     historyListHeight: number;
 
     private mousedownPosition: Position;
@@ -256,6 +264,11 @@ export class MindMapComponent implements OnDestroy, OnInit {
         this.deletedIdeasDelete.next(ideas);
     }
 
+    onCanvasExpand(e: MouseEvent) {
+        let deltaHeight = window.innerHeight * 0.85;
+        this.canvasExpand.next(deltaHeight);
+    }
+
     private initState() {
         Observable.fromEvent(document, 'keyup')
             .filter((e: KeyboardEvent) => {
@@ -263,9 +276,7 @@ export class MindMapComponent implements OnDestroy, OnInit {
             }).subscribe((e: KeyboardEvent) => {
                 this.isAddingNewIdea = false;
             });
-        this.canvasWidth = window.innerWidth * 0.95;
-        this.canvasHeight = window.innerHeight * 0.85;
-        this.historyListHeight = this.canvasHeight * 0.86;
+        this.historyListHeight = this.canvasArr[0].canvasHeight * 0.86;
     }
 
     private recordMousedownState(ei: EventAndIdea) {
